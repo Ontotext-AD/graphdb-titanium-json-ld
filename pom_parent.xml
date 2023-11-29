@@ -5,11 +5,18 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.apicatalog</groupId>
-	<artifactId>titanium</artifactId>
+	<artifactId>graphdb-titanium</artifactId>
 	<version>1.3.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Titanium JSON-LD 1.1</name>
+<!--	<url>https://github.com/Ontotext-AD/graphdb-titanium-json-ld</url>-->
+<!--	<scm>-->
+<!--		<connection>scm:git:git@github.com:Ontotext-AD/graphdb-titanium-json-ld.git</connection>-->
+<!--		<developerConnection>scm:git:git@github.com:Ontotext-AD/graphdb-titanium-json-ld.git</developerConnection>-->
+<!--		<url>https://github.com/Ontotext-AD/graphdb-titanium-json-ld/tree/ontotext</url>-->
+<!--		<tag>HEAD</tag>-->
+<!--	</scm>-->
 
 	<description>
         A JSON-LD 1.1 Processor &amp; API
@@ -44,6 +51,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+<!--		<maven.compiler.target>11</maven.compiler.target>-->
+<!--		<maven.compiler.source>11</maven.compiler.source>-->
+<!--		<envSources>src/main/java11</envSources>-->
+
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 
 		<argLine>-Dfile.encoding=UTF-8</argLine>
@@ -55,6 +66,9 @@
 		<sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
 		<sonar.organization>apicatalog</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+		<internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
+		<snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -193,49 +207,29 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>3.2.2</version>
 			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.sonatype.plugins</groupId>-->
+<!--				<artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--				<version>1.6.13</version>-->
+<!--				<extensions>true</extensions>-->
+<!--				<configuration>-->
+<!--					<serverId>snapshots</serverId>-->
+<!--					<nexusUrl>${snapshots.repo}</nexusUrl>-->
+<!--					<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>maven-central</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.1.0</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.13</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
-	</profiles>
+	<distributionManagement>
+		<repository>
+			<id>internal</id>
+			<name>GraphDB Releases repository</name>
+			<url>${internal.repo}</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>GraphDB Snapshots repository</name>
+			<url>${snapshots.repo}</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

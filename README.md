@@ -184,13 +184,6 @@ Fork and clone the project repository.
 > ./mvnw clean package
 ```
 
-#### Java 8
-
-```bash
-> cd titanium-json-ld
-> ./mvnw -f pom_jre8.xml clean package
-```
-
 ## Resources
 - [JSON-LD 1.1](https://www.w3.org/TR/json-ld/)
 - [JSON-LD 1.1 Processing Algorithms and API](https://www.w3.org/TR/json-ld-api/)
