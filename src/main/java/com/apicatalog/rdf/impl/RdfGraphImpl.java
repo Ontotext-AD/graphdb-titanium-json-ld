@@ -34,7 +34,7 @@ final class RdfGraphImpl implements RdfGraph {
     private final List<RdfTriple> triples;
 
     protected RdfGraphImpl() {
-        this.index = new HashMap<>();
+        this.index = new HashMap<>(1);
         this.triples = new ArrayList<>();
     }
 
@@ -45,9 +45,9 @@ final class RdfGraphImpl implements RdfGraph {
         }
 
         index
-            .computeIfAbsent(triple.getSubject(), x -> new HashMap<>())
-            .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>())
-            .add(triple.getObject());
+                .computeIfAbsent(triple.getSubject(), x -> new HashMap<>(1))
+                .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>(1))
+                .add(triple.getObject());
 
         triples.add(triple);
     }
@@ -60,9 +60,8 @@ final class RdfGraphImpl implements RdfGraph {
         }
 
         return index.containsKey(triple.getSubject())
-                    && index.get(triple.getSubject()).containsKey(triple.getPredicate())
-                    && index.get(triple.getSubject()).get(triple.getPredicate()).contains(triple.getObject())
-                    ;
+                && index.get(triple.getSubject()).containsKey(triple.getPredicate())
+                && index.get(triple.getSubject()).get(triple.getPredicate()).contains(triple.getObject());
     }
 
     @Override

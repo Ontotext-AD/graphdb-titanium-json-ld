@@ -61,7 +61,7 @@ public final class FramingProcessor {
     private FramingProcessor() {
     }
 
-    public static final JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final URI input, final Document frame, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + input + "].");
         }
@@ -78,7 +78,7 @@ public final class FramingProcessor {
         return frame(remoteDocument, frame, options);
     }
 
-    public static final JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final Document input, final URI frameUri, final JsonLdOptions options) throws JsonLdError {
         if (options.getDocumentLoader() == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Document loader is null. Cannot fetch [" + frameUri + "].");
         }
@@ -92,16 +92,16 @@ public final class FramingProcessor {
         return frame(input, frameDocument, options);
     }
 
-    public static final JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final Document input, final Document frame, final JsonLdOptions options) throws JsonLdError {
 
         if (frame == null) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame or Frame.Document is null.");
         }
 
         final JsonStructure frameStructure =
-                                    frame
-                                        .getJsonContent()
-                                        .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
+                frame
+                        .getJsonContent()
+                        .orElseThrow(() -> new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but null."));
 
         if (JsonUtils.isNotObject(frameStructure)) {
             throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, "Frame is not JSON object but [" + frameStructure + "].");
@@ -122,26 +122,25 @@ public final class FramingProcessor {
         JsonValue context = JsonValue.EMPTY_JSON_OBJECT;
 
         if (frameObject.containsKey(Keywords.CONTEXT)
-                ) {
+        ) {
             context = frameObject.get(Keywords.CONTEXT);
         }
 
         // 9.
         final URI contextBase = (frame.getContextUrl() != null)
-                                ? frame.getDocumentUrl()
-                                : options.getBase();
+                ? frame.getDocumentUrl()
+                : options.getBase();
 
         // 10-11.
         final ActiveContext activeContext =
-                                new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options)
-                                            .newContext()
-                                            .create(context, contextBase);
-
-        final String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
+                new ActiveContext(input.getDocumentUrl(), input.getDocumentUrl(), options)
+                        .newContext()
+                        .create(context, contextBase);
 
         // 13.
+        String graphKey = activeContext.uriCompaction().vocab(true).compact(Keywords.GRAPH);
         boolean frameDefault = false;
-        for (final String key : frameObject.keySet()) {
+        for (String key : frameObject.keySet()) {
             if(key.equals(graphKey)) {
                 frameDefault = true;
                 break;
@@ -172,11 +171,11 @@ public final class FramingProcessor {
 
         // 16.
         Framing.with(state,
-                    new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
-                    Frame.of(expandedFrame),
-                    resultMap,
-                    null
-                    )
+                        new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
+                        Frame.of(expandedFrame),
+                        resultMap,
+                        null
+                )
                 .ordered(options.isOrdered())
                 .frame();
 
@@ -199,20 +198,20 @@ public final class FramingProcessor {
 
         // 19.
         JsonValue compactedResults = Compaction
-                                            .with(activeContext)
-                                            .compactArrays(options.isCompactArrays())
-                                            .ordered(options.isOrdered())
-                                            .compact(filtered.build());
+                .with(activeContext)
+                .compactArrays(options.isCompactArrays())
+                .ordered(options.isOrdered())
+                .compact(filtered.build());
 
         // 19.1.
         if (JsonUtils.isEmptyArray(compactedResults)) {
             compactedResults = JsonValue.EMPTY_JSON_OBJECT;
 
-        // 19.2.
+            // 19.2.
         } else if (JsonUtils.isArray(compactedResults)) {
 
             compactedResults = JsonProvider.instance().createObjectBuilder()
-                                    .add(graphKey, compactedResults).build();
+                    .add(graphKey, compactedResults).build();
 
         }
 
@@ -231,17 +230,18 @@ public final class FramingProcessor {
 
         // 21.
         if (!omitGraph && !compactedResults.asJsonObject().containsKey(graphKey)) {
+
             if (compactedResults.asJsonObject().isEmpty()) {
 
                 compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
                         JsonValue.EMPTY_JSON_ARRAY
-                        ).build();
+                ).build();
 
             } else {
 
                 compactedResults = JsonProvider.instance().createObjectBuilder().add(graphKey,
-                                        JsonProvider.instance().createArrayBuilder().add(compactedResults)
-                                        ).build();
+                        JsonProvider.instance().createArrayBuilder().add(compactedResults)
+                ).build();
             }
         }
 
@@ -253,7 +253,7 @@ public final class FramingProcessor {
         return compactedResults.asJsonObject();
     }
 
-    public static final JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
+    public static JsonObject frame(final URI input, final URI frame, final JsonLdOptions options) throws JsonLdError {
         return frame(getDocument(input, options), getDocument(frame, options), options);
     }
 
@@ -275,7 +275,7 @@ public final class FramingProcessor {
         return remoteDocument;
     }
 
-    private static final JsonValue removePreserve(JsonValue value) {
+    private static JsonValue removePreserve(JsonValue value) {
 
         if (JsonUtils.isScalar(value)) {
             return value;
@@ -304,7 +304,7 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static final JsonValue replaceNull(JsonValue value) {
+    private static JsonValue replaceNull(JsonValue value) {
 
         if (JsonUtils.isString(value) && Keywords.NULL.equals(((JsonString)value).getString())) {
             return JsonValue.NULL;
@@ -330,7 +330,7 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static final JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
+    private static JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
 
         if (JsonUtils.isScalar(value)) {
             return value;
@@ -353,7 +353,7 @@ public final class FramingProcessor {
                     && JsonUtils.isString(entry.getValue())
                     && blankNodes.contains(((JsonString)entry.getValue()).getString())) {
 
-                    continue;
+                continue;
             }
 
             object.add(entry.getKey(), removeBlankIdKey(entry.getValue(), blankNodes));
@@ -362,16 +362,24 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static final List<String> findBlankNodes(final JsonArray array) {
+    private static List<String> findBlankNodes(final JsonArray array) {
+
+        if(array.isEmpty()) {
+            return List.of();
+        }
 
         Map<String, Integer> candidates = new HashMap<>();
 
         array.forEach(v -> findBlankNodes(v, candidates));
 
+        if(candidates.isEmpty()) {
+            return List.of();
+        }
+
         return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
     }
 
-    private static final void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
+    private static void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
 
         if (JsonUtils.isString(value)) {
 

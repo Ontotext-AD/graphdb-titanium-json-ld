@@ -16,7 +16,7 @@
 package com.apicatalog.jsonld.lang;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Set;
 
 public final class Keywords {
 
@@ -94,21 +94,31 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Collection<String> ALL_KEYWORDS = Arrays.asList(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
+    private static final Set<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
             // framing
             DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED,
             // star
             ANNOTATION
-            );
+    );
 
+    private static final int ALL_KEYWORDS_MAX_LENGTH = ALL_KEYWORDS.stream().mapToInt(String::length).max().getAsInt();
+    private static final int ALL_KEYWORDS_MIN_LENGTH = ALL_KEYWORDS.stream().mapToInt(String::length).min().getAsInt();
 
     protected Keywords() {
     }
 
     public static boolean contains(final String value) {
-        return ALL_KEYWORDS.contains(value);
+        if (value == null) {
+            return false;
+        }
+        int length = value.length();
+        if (length >= ALL_KEYWORDS_MIN_LENGTH && length <= ALL_KEYWORDS_MAX_LENGTH) {
+            return ALL_KEYWORDS.contains(value);
+        }
+
+        return false;
     }
 
     /**
@@ -133,6 +143,13 @@ public final class Keywords {
         return true;
     }
 
+    public static boolean noneMatch(final String key, String keyword1, String keyword2) {
+        if(key.equals(keyword1) || key.equals(keyword2)){
+            return false;
+        }
+        return true;
+    }
+
     public static boolean noneMatch(final String key, final String... keywords) {
         // vanilla approach is 3 times faster than stream.noneMatch
         for (String k : keywords) {
@@ -147,7 +164,7 @@ public final class Keywords {
         return Arrays.asList(keywords).contains(key);
     }
 
-    public static boolean allMatch(final Collection<String> values, final String... keywords) {
-        return Arrays.asList(keywords).containsAll(values);
+    public static boolean notAllMatch(Set<String> values, Set<String> keywords) {
+        return !keywords.containsAll(values);
     }
 }

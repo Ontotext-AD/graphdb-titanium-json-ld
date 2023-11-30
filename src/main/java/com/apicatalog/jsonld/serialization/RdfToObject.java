@@ -114,6 +114,13 @@ final class RdfToObject {
 
                     convertedValue = JsonProvider.instance().createValue(Double.parseDouble(literal.getValue()));
 
+                } else if (literal.getLanguage().isPresent()) {
+
+                    literal
+                            .getLanguage()
+                            .map(Json::createValue)
+                            .ifPresent(language -> result.add(Keywords.LANGUAGE, language));
+
                 } else if (literal.getDatatype() != null) {
 
                     type = literal.getDatatype();

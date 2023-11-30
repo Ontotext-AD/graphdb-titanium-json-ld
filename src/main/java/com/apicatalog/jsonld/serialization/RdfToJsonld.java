@@ -171,7 +171,9 @@ public final class RdfToJsonld {
                         // 6.1.6.1.
                         clObject.remove(Keywords.ID);
 
-                        clObject.add(Keywords.VALUE, JsonUtils.flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
+                        if (clNode.containsKey(RdfConstants.VALUE)) {
+                            clObject.add(Keywords.VALUE, JsonUtils.flatten(clNode.get(RdfConstants.VALUE), Keywords.VALUE));
+                        }
 
                         // 6.1.6.3.
                         if (clNode.containsKey(RdfConstants.LANGUAGE)) {

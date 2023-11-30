@@ -17,8 +17,8 @@ package com.apicatalog.jsonld.uri;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import com.apicatalog.jsonld.StringUtils;
 
@@ -33,7 +33,7 @@ public final class UriResolver {
     private UriResolver() {
     }
 
-    public static final String resolve(final URI base, final String relative) {
+    public static String resolve(final URI base, final String relative) {
 
         if (base == null) {
             return relative;
@@ -42,7 +42,7 @@ public final class UriResolver {
         return resolve(base, UriUtils.create(relative));
     }
 
-    public static final String resolve(final URI base, final URI relative) {
+    public static String resolve(final URI base, final URI relative) {
 
         if (relative == null) {
             return base != null ? base.toString() : null;
@@ -57,7 +57,7 @@ public final class UriResolver {
         return UriUtils.recompose(components[0], components[1], components[2], components[3], components[4]);
     }
 
-    public static final URI resolveAsUri(final URI base, final String relative) {
+    public static URI resolveAsUri(final URI base, final String relative) {
 
         if (StringUtils.isBlank(relative)) {
             return base;
@@ -70,7 +70,7 @@ public final class UriResolver {
         return resolveAsUri(base, UriUtils.create(relative));
     }
 
-    public static final  URI resolveAsUri(final URI base, final URI relative) {
+    public static URI resolveAsUri(final URI base, final URI relative) {
 
         if (relative == null) {
             return base;
@@ -85,7 +85,7 @@ public final class UriResolver {
         try {
             if (components[0] != null
                     && components[1] == null
-                    ) {
+            ) {
                 return new URI(components[0], components[2].trim().isEmpty() ? "." : components[2], components[4]);
             }
 
@@ -96,7 +96,7 @@ public final class UriResolver {
         }
     }
 
-    private static final String[] resolveAsComponents(final URI base, final URI relative) {
+    private static String[] resolveAsComponents(final URI base, final URI relative) {
 
         String basePath = base.getPath();
         String baseAuthority = base.getAuthority();
@@ -166,21 +166,25 @@ public final class UriResolver {
     }
 
     /**
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
-     *      Segments</a>
-     *
      * @param path
      * @return
+     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.4">Remove Dot
+     * Segments</a>
      */
-    private static final String removeDotSegments(final String path) {
+    private static String removeDotSegments(final String path) {
 
         if (UriUtils.isNotDefined(path)) {
             return null;
         }
 
+        if (!path.contains(".")) {
+            return path;
+        }
+
+
         String input = path;
-        List<String> output = new ArrayList<>();
+
+        Deque<String> output = new ArrayDeque<>();
 
         while (StringUtils.isNotBlank(input)) {
 
@@ -191,40 +195,40 @@ public final class UriResolver {
             } else if (input.startsWith("./")) {
                 input = input.substring(2);
 
-            // B.
+                // B.
             } else if (input.startsWith("/./")) {
-                input = "/".concat(input.substring(3));
+                input = input.substring(2); // we need to leave the "/" at the end of "/./"
 
             } else if ("/.".equals(input)) {
                 input = "/";
 
-            // C.
+                // C.
             } else if (input.startsWith("/../")) {
-                input = "/".concat(input.substring(4));
+                input = input.substring(3); // we need to leave the "/" at the end of "/../"
                 if (!output.isEmpty()) {
-                    output.remove(output.size() - 1);
+                    output.removeLast();
                 }
 
             } else if ("/..".equals(input)) {
                 input = "/";
                 if (!output.isEmpty()) {
-                    output.remove(output.size() - 1);
+                    output.removeLast();
                 }
 
-            // D.
+                // D.
             } else if ("..".equals(input) || ".".equals(input)) {
                 input = "";
 
-            // E.
+                // E.
             } else {
                 int nextSlashIndex = input.indexOf('/', 1);
 
                 if (nextSlashIndex != -1) {
-                    output.add(input.substring(0, nextSlashIndex));
+                    output.addLast(input.substring(0, nextSlashIndex));
                     input = input.substring(nextSlashIndex);
 
                 } else {
-                    output.add(input);
+                    output.addLast(input);
                     input = "";
                 }
             }
@@ -233,16 +237,15 @@ public final class UriResolver {
         return String.join("", output);
     }
 
+
     /**
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.3">Merge
-     *      Paths</a>
-     *
      * @param basePath
      * @param path
      * @return
+     * @see <a href="https://tools.ietf.org/html/rfc3986#section-5.2.3">Merge
+     * Paths</a>
      */
-    private static final String merge(String basePath, String path) {
+    private static String merge(String basePath, String path) {
 
         if (UriUtils.isNotDefined(basePath)) {
             return "/".concat(path);

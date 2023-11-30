@@ -16,8 +16,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Map;
 
 /**
  *
@@ -46,7 +45,7 @@ public final class TermSelector {
         return new TermSelector(activeContext, variable, containers, typeLanguage);
     }
 
-    public Optional<String> match(final Collection<String> preferredValues) {
+    public String match(final Collection<String> preferredValues) {
 
         // 1. If the active context has a null inverse context,
         //    set inverse context in active context to the result of calling
@@ -59,15 +58,17 @@ public final class TermSelector {
         final InverseContext inverseContext = activeContext.getInverseContext();
 
         // 4.
-        return containers
-                    .stream()
-                    .filter(container -> inverseContext.contains(variable, container, typeLanguage))
-
-                    .flatMap(container -> preferredValues
-                                            .stream()
-                                            .map(item -> inverseContext.get(variable, container, typeLanguage, item)))
-
-                    .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
-                    .findFirst();
+        for (String container : containers) {
+            Map<String, String> map = inverseContext.getNullable(variable, container, typeLanguage);
+            if (map != null) {
+                for (String item : preferredValues) {
+                    String result = map.get(item);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
