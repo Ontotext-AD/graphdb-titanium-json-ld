@@ -3,25 +3,172 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>graphdb-titanium</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
-    <relativePath>pom_parent.xml</relativePath>
-  </parent>
-  <artifactId>graphdb-titanium-json-ld</artifactId>
+  <groupId>com.apicatalog</groupId>
+  <artifactId>titanium-json-ld</artifactId>
+  <version>1.3.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Titanium JSON-LD 1.1 (JRE11)</name>
   <url>https://github.com/Ontotext-AD/graphdb-titanium-json-ld</url>
   <scm>
     <connection>scm:git:git@github.com:Ontotext-AD/graphdb-titanium-json-ld.git</connection>
     <developerConnection>scm:git:git@github.com:Ontotext-AD/graphdb-titanium-json-ld.git</developerConnection>
-    <url>https://github.com/Ontotext-AD/graphdb-titanium-json-ld/tree/ontotext</url>
+    <url>https://github.com/Ontotext-AD/graphdb-titanium-json-ld</url>
     <tag>HEAD</tag>
   </scm>
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
     <envSources>src/main/java11</envSources>
+
+    <!-- Properties from former pom_parent.xml -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <jakarta.json.version>2.0.1</jakarta.json.version>
+
+    <argLine>-Dfile.encoding=UTF-8</argLine>
+
+    <!-- test resources -->
+    <junit.version>5.10.1</junit.version>
+    <wiremock.version>2.35.1</wiremock.version>
+
+    <sonar.projectKey>filip26_titanium-json-ld</sonar.projectKey>
+    <sonar.organization>apicatalog</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+    <internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
+    <snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
+      <version>${jakarta.json.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Tests -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.json</artifactId>
+      <version>${jakarta.json.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>${wiremock.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${envSources}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.11</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <configuration>
+          <flattenMode>oss</flattenMode>
+        </configuration>
+        <executions>
+          <!-- enable flattening -->
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <!-- ensure proper cleanup -->
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.2.2</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>internal</id>
+      <name>GraphDB Releases repository</name>
+      <url>${internal.repo}</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>GraphDB Snapshots repository</name>
+      <url>${snapshots.repo}</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
