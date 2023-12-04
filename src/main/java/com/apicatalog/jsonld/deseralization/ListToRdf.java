@@ -58,7 +58,7 @@ final class ListToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static final ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
+    public static ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
         return new ListToRdf(list, triples, nodeMap);
     }
 
@@ -90,27 +90,28 @@ final class ListToRdf {
             final List<RdfTriple> embeddedTriples = new ArrayList<>();
 
             // 3.2.
-            ObjectToRdf
-                .with(item.asJsonObject(), embeddedTriples, nodeMap)
-                .rdfDirection(rdfDirection)
-                .uriValidation(uriValidation)
-                .build()
-                .ifPresent(object ->
-                                triples.add(Rdf.createTriple(
-                                                Rdf.createBlankNode(subject),
-                                                Rdf.createIRI(RdfConstants.FIRST),
-                                                object)));
+            RdfValue rdfValue = ObjectToRdf
+                    .with(item.asJsonObject(), embeddedTriples, nodeMap)
+                    .rdfDirection(rdfDirection)
+                    .uriValidation(uriValidation)
+                    .build();
+            if(rdfValue != null) {
+                triples.add(Rdf.createTriple(
+                        Rdf.createBlankNode(subject),
+                        Rdf.createIRI(RdfConstants.FIRST),
+                        rdfValue));
+            }
 
             // 3.4.
             final RdfValue rest = (index < bnodes.length) ? Rdf.createBlankNode(bnodes[index])
-                                        : Rdf.createIRI(RdfConstants.NIL)
-                                        ;
+                    : Rdf.createIRI(RdfConstants.NIL)
+                    ;
 
             triples.add(Rdf.createTriple(
-                                    Rdf.createBlankNode(subject),
-                                    Rdf.createIRI(RdfConstants.REST),
-                                    rest
-                                    ));
+                    Rdf.createBlankNode(subject),
+                    Rdf.createIRI(RdfConstants.REST),
+                    rest
+            ));
 
             // 3.5.
             triples.addAll(embeddedTriples);

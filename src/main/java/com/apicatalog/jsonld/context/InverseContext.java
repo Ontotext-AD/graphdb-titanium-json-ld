@@ -15,6 +15,7 @@
  */
 package com.apicatalog.jsonld.context;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,10 +36,18 @@ public final class InverseContext {
     }
 
     private boolean doesNotContain(final String variable, final String container, final String type, final String key) {
-        return !context.containsKey(variable)
-                || !context.get(variable).containsKey(container)
-                || !context.get(variable).get(container).containsKey(type)
-                || !context.get(variable).get(container).get(type).containsKey(key);
+        var stringMapMap = context.get(variable);
+        if(stringMapMap != null){
+            var stringMapMap1 = stringMapMap.get(container);
+            if(stringMapMap1 != null){
+                var stringStringMap = stringMapMap1.get(type);
+                if(stringStringMap != null){
+                    return !stringStringMap.containsKey(key);
+                }
+            }
+        }
+        return true;
+
     }
 
     public boolean contains(final String variable) {
@@ -46,16 +55,21 @@ public final class InverseContext {
     }
 
     public boolean contains(final String variable, final String container, final String type) {
-        return context.containsKey(variable)
-                && context.get(variable).containsKey(container)
-                && context.get(variable).get(container).containsKey(type);
+        var stringMapMap = context.get(variable);
+        if(stringMapMap != null){
+            var stringMapMap1 = stringMapMap.get(container);
+            if(stringMapMap1 != null){
+                return stringMapMap1.containsKey(type);
+            }
+        }
+        return false;
     }
 
     public boolean contains(final String variable, final String container, final String type, final String key) {
         return contains(variable)
-                    && context.get(variable).containsKey(container)
-                    && context.get(variable).get(container).containsKey(type)
-                    && context.get(variable).get(container).get(type).containsKey(key);
+                && context.get(variable).containsKey(container)
+                && context.get(variable).get(container).containsKey(type)
+                && context.get(variable).get(container).get(type).containsKey(key);
     }
 
     public InverseContext setIfAbsent(final String variable, final String container, final String type, final String key, final String value) {
@@ -70,5 +84,33 @@ public final class InverseContext {
             return Optional.empty();
         }
         return Optional.ofNullable(context.get(variable).get(container).get(type).get(key));
+    }
+
+    public String getNullable(final String variable, final String container, final String type, final String key) {
+        var map1 = context.get(variable);
+        if(map1 == null){
+            return null;
+        }
+        var map2 = map1.get(container);
+        if(map2 == null){
+            return null;
+        }
+        var map3 = map2.get(type);
+        if(map3 == null){
+            return null;
+        }
+        return map3.get(key);
+    }
+
+    public Map<String, String> getNullable(final String variable, final String container, final String type) {
+        var map1 = context.get(variable);
+        if(map1 == null){
+            return null;
+        }
+        var map2 = map1.get(container);
+        if(map2 == null){
+            return null;
+        }
+        return map2.get(type);
     }
 }

@@ -18,6 +18,7 @@ package com.apicatalog.jsonld.json;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -29,6 +30,7 @@ import jakarta.json.JsonValue;
 
 public final class JsonMapBuilder {
 
+    public static final Set<String> ValueObjectKeywords = Set.of(Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
     private final Map<String, Object> map;
 
     private JsonMapBuilder(Map<String, Object> map) {
@@ -107,7 +109,7 @@ public final class JsonMapBuilder {
     }
 
     public boolean isNotValueObject() {
-        return !Keywords.allMatch(map.keySet(), Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
+        return Keywords.notAllMatch(map.keySet(), ValueObjectKeywords);
     }
 
     public JsonArray valuesToArray() {
@@ -150,7 +152,7 @@ public final class JsonMapBuilder {
         if (JsonUtils.isArray(value)) {
             value.asJsonArray().forEach(v -> add(key, v, asArray));
 
-        // 3.
+            // 3.
         } else {
 
             final Object original = map.get(key);
@@ -177,7 +179,7 @@ public final class JsonMapBuilder {
                     throw new IllegalStateException();
                 }
 
-            // 3.2
+                // 3.2
             } else {
                 map.put(key, value);
             }
@@ -236,7 +238,7 @@ public final class JsonMapBuilder {
                 return JsonMapBuilder.create(((JsonValue)value).asJsonObject());
             }
 
-           throw new IllegalStateException();
+            throw new IllegalStateException();
 
         }
 

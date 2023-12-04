@@ -46,7 +46,7 @@ public final class Expansion {
     private boolean fromMap;
 
     private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
-            final URI baseUrl) {
+                      final URI baseUrl) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -58,7 +58,7 @@ public final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
+    public static Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
         return new Expansion(activeContext, element, activeProperty, baseUrl);
     }
 
@@ -88,34 +88,34 @@ public final class Expansion {
         if (JsonUtils.isArray(element)) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
-                        .frameExpansion(frameExpansion)
-                        .ordered(ordered)
-                        .fromMap(fromMap)
-                        .expand();
+                    .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                    .frameExpansion(frameExpansion)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .expand();
         }
 
         // 3. If active property has a term definition in active context with a local
         // context, initialize property-scoped context to that local context.
         final JsonValue propertyContext = activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getLocalContext)
-                                            .orElse(null);
+                .getTerm(activeProperty)
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
 
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
 
             return ScalarExpansion
-                        .with(activeContext, propertyContext, element, activeProperty)
-                        .expand();
+                    .with(activeContext, propertyContext, element, activeProperty)
+                    .expand();
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
-                    .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
-                    .ordered(ordered)
-                    .fromMap(fromMap)
-                    .expand();
+                .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+                .frameExpansion(frameExpansion && !Keywords.DEFAULT.equals(activeProperty))
+                .ordered(ordered)
+                .fromMap(fromMap)
+                .expand();
     }
 }

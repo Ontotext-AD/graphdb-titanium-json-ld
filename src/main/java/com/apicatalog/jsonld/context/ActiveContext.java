@@ -16,8 +16,10 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,6 +66,9 @@ public final class ActiveContext {
 
     private final JsonLdOptions options;
 
+    // a cache of prefixes that can be iterated through for quick lookup
+    private final List<CachedPrefix> prefixCache = new ArrayList<>(10);
+
     public ActiveContext(final JsonLdOptions options) {
         this(null, null, null, options);
     }
@@ -95,7 +100,7 @@ public final class ActiveContext {
 
     public void createInverseContext() {
         this.inverseContext = InverseContextBuilder.with(this).build();
-   }
+    }
 
     public boolean containsTerm(final String term) {
         return terms.containsKey(term);
@@ -105,7 +110,7 @@ public final class ActiveContext {
         return terms.values().stream().anyMatch(TermDefinition::isProtected);
     }
 
-    protected Optional<TermDefinition> removeTerm(final String term) {
+    Optional<TermDefinition> removeTerm(final String term) {
         if (terms.containsKey(term)) {
             return Optional.of(terms.remove(term));
         }
@@ -113,7 +118,17 @@ public final class ActiveContext {
     }
 
     public Optional<TermDefinition> getTerm(final String value) {
+        if (value == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(terms.get(value));
+    }
+
+    public TermDefinition getTermNullable(final String value) {
+        if (value == null) {
+            return null;
+        }
+        return terms.get(value);
     }
 
     public DirectionType getDefaultBaseDirection() {
@@ -192,36 +207,69 @@ public final class ActiveContext {
         return options;
     }
 
-    protected void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
+    void setDefaultBaseDirection(final DirectionType defaultBaseDirection) {
         this.defaultBaseDirection = defaultBaseDirection;
     }
 
-    protected void setDefaultLanguage(final String defaultLanguage) {
+    void setDefaultLanguage(final String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
     }
 
-    protected void setVocabularyMapping(final String vocabularyMapping) {
+    void setVocabularyMapping(final String vocabularyMapping) {
         this.vocabularyMapping = vocabularyMapping;
     }
 
-    protected void setBaseUrl(final URI baseUrl) {
+    private void setBaseUrl(final URI baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    protected void setPreviousContext(final ActiveContext previousContext) {
+    void setPreviousContext(final ActiveContext previousContext) {
         this.previousContext = previousContext;
     }
 
-    protected void setInverseContext(final InverseContext inverseContext) {
+    void setInverseContext(final InverseContext inverseContext) {
         this.inverseContext = inverseContext;
     }
 
-    protected void setTerm(final String term, final TermDefinition definition) {
+    void setTerm(final String term, final TermDefinition definition) {
         terms.put(term, definition);
     }
 
     @Override
     public String toString() {
         return "ActiveContext[terms=" + terms + ", previousContext=" + previousContext + "]";
+    }
+
+    public TermDefinition getPrefix(String prefix) {
+        if (prefix == null) {
+            return null;
+        }
+        if (prefixCache.size() <= 10) {
+            for (CachedPrefix cachedPrefix : prefixCache) {
+                if (cachedPrefix.prefix.equals(prefix)) {
+                    return cachedPrefix.termDefinition;
+                }
+            }
+        } else {
+            prefixCache.clear();
+        }
+
+        TermDefinition termDefinition = terms.get(prefix);
+        if (termDefinition != null) {
+            prefixCache.add(new CachedPrefix(prefix, termDefinition));
+        }
+        return termDefinition;
+
+
+    }
+
+    private static class CachedPrefix {
+        private final String prefix;
+        private final TermDefinition termDefinition;
+
+        private CachedPrefix(String prefix, TermDefinition termDefinition) {
+            this.prefix = prefix;
+            this.termDefinition = termDefinition;
+        }
     }
 }
