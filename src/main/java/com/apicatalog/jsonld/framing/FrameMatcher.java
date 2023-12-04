@@ -15,9 +15,7 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -26,7 +24,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
-
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
@@ -48,14 +47,14 @@ public final class FrameMatcher {
         return new FrameMatcher(state, frame, requireAll);
     }
 
-    public List<String> match(final Collection<String> subjects) throws JsonLdError {
+    public ObjectList<String> match(final Collection<String> subjects) throws JsonLdError {
 
         // 1. if frame is empty then all subject match
         if (frame.isWildCard()) {
-            return new ArrayList<>(subjects);
+            return new ObjectArrayList<>(subjects);
         }
 
-        final List<String> result = new ArrayList<>();
+        final ObjectList<String> result = new ObjectArrayList<>();
 
         for (final String subject : subjects) {
 

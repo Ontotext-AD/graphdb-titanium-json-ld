@@ -16,10 +16,7 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +27,9 @@ import com.apicatalog.jsonld.compaction.ValueCompaction;
 import com.apicatalog.jsonld.expansion.UriExpansion;
 import com.apicatalog.jsonld.expansion.ValueExpansion;
 import com.apicatalog.jsonld.lang.DirectionType;
-
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonObject;
 
 /**
@@ -42,7 +41,7 @@ public final class ActiveContext {
 
     // the active term definitions which specify how keys and values have to be
     // interpreted
-    private final Map<String, TermDefinition> terms;
+    private final Object2ObjectLinkedOpenHashMap<String, TermDefinition> terms;
 
     // the current base IRI
     private URI baseUri;
@@ -67,7 +66,7 @@ public final class ActiveContext {
     private final JsonLdOptions options;
 
     // a cache of prefixes that can be iterated through for quick lookup
-    private final List<CachedPrefix> prefixCache = new ArrayList<>(10);
+    private final ObjectArrayList<CachedPrefix> prefixCache = new ObjectArrayList<>(10);
 
     public ActiveContext(final JsonLdOptions options) {
         this(null, null, null, options);
@@ -81,13 +80,13 @@ public final class ActiveContext {
         this.baseUri = baseUri;
         this.baseUrl = baseUrl;
         this.previousContext = previousContext;
-        this.terms = new LinkedHashMap<>();
+        this.terms = new Object2ObjectLinkedOpenHashMap<>();
         this.options = options;
     }
 
     // copy constructor
     public ActiveContext(final ActiveContext origin) {
-        this.terms = new LinkedHashMap<>(origin.terms);
+        this.terms = new Object2ObjectLinkedOpenHashMap<>(origin.terms);
         this.baseUri = origin.baseUri;
         this.baseUrl = origin.baseUrl;
         this.inverseContext = origin.inverseContext;
@@ -195,7 +194,7 @@ public final class ActiveContext {
         return ValueCompaction.with(this);
     }
 
-    public TermDefinitionBuilder newTerm(final JsonObject localContext, final Map<String, Boolean> defined) {
+    public TermDefinitionBuilder newTerm(final JsonObject localContext, final Object2ObjectOpenHashMap<String, Boolean> defined) {
         return TermDefinitionBuilder.with(this, localContext, defined);
     }
 

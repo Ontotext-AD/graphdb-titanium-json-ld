@@ -16,9 +16,7 @@
 package com.apicatalog.jsonld.compaction;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -36,6 +34,7 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriRelativizer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -219,7 +218,7 @@ public final class UriCompaction {
         }
 
         // 4.3.
-        List<String> containers = new ArrayList<>(8);
+        ObjectArrayList<String> containers = new ObjectArrayList<>(8);
 
         // 4.4.
         String typeLanguage = Keywords.LANGUAGE;
@@ -479,7 +478,7 @@ public final class UriCompaction {
         }
 
         // 4.14.
-        Collection<String> preferredValues = new ArrayList<>();
+        Collection<String> preferredValues = new ObjectArrayList<>();
 
         // 4.15.
         if (Keywords.REVERSE.equals(typeLanguageValue)) {
@@ -540,7 +539,7 @@ public final class UriCompaction {
         preferredValues.add(Keywords.ANY);
 
         // 4.19.
-        for (final String preferredValue : new ArrayList<>(preferredValues)) {
+        for (final String preferredValue : new ObjectArrayList<>(preferredValues)) {
 
             int index = preferredValue.indexOf('_');
 

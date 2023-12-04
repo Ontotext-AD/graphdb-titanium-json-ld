@@ -15,12 +15,8 @@
  */
 package com.apicatalog.jsonld.flattening;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -31,6 +27,9 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -49,8 +48,8 @@ public final class NodeMapBuilder {
     private String activeGraph;
     private String activeSubject;
     private String activeProperty;
-    private Map<String, JsonValue> referencedNode;
-    private Map<String, JsonValue> list;
+    private Object2ObjectLinkedOpenHashMap<String, JsonValue> referencedNode;
+    private Object2ObjectLinkedOpenHashMap<String, JsonValue> list;
 
 
     private NodeMapBuilder(final JsonStructure element, final NodeMap nodeMap) {
@@ -84,12 +83,12 @@ public final class NodeMapBuilder {
         return this;
     }
 
-    public NodeMapBuilder list(Map<String, JsonValue> list) {
+    public NodeMapBuilder list(Object2ObjectLinkedOpenHashMap<String, JsonValue> list) {
         this.list = list;
         return this;
     }
 
-    public NodeMapBuilder referencedNode(Map<String, JsonValue> referencedNode) {
+    public NodeMapBuilder referencedNode(Object2ObjectLinkedOpenHashMap<String, JsonValue> referencedNode) {
         this.referencedNode = referencedNode;
         return this;
     }
@@ -127,7 +126,7 @@ public final class NodeMapBuilder {
         }
 
         // 2.
-        final Map<String, JsonValue> elementObject = new LinkedHashMap<>(element.asJsonObject());
+        final Object2ObjectLinkedOpenHashMap<String, JsonValue> elementObject = new Object2ObjectLinkedOpenHashMap<>(element.asJsonObject());
 
         // 3.
         if (elementObject.containsKey(Keywords.TYPE)) {
@@ -173,7 +172,7 @@ public final class NodeMapBuilder {
         // 5.
         else if (elementObject.containsKey(Keywords.LIST)) {
             // 5.1.
-            Map<String, JsonValue> result = new LinkedHashMap<>();
+            Object2ObjectLinkedOpenHashMap<String, JsonValue> result = new Object2ObjectLinkedOpenHashMap<>();
             result.put(Keywords.LIST, JsonValue.EMPTY_JSON_ARRAY);
 
             // 5.2.
@@ -288,7 +287,7 @@ public final class NodeMapBuilder {
 
                 // 6.7.
                 if (elementObject.containsKey(Keywords.TYPE)) {
-                    Set<JsonValue> nodeType = Set.of();
+                    ObjectSet<JsonValue> nodeType = ObjectSet.of();
 
                     final JsonValue nodeTypeValue = nodeMap.get(activeGraph, id, Keywords.TYPE);
 
@@ -337,14 +336,14 @@ public final class NodeMapBuilder {
                 // 6.9.
                 if (elementObject.containsKey(Keywords.REVERSE)) {
                     // 6.9.1.
-                    Map<String, JsonValue> referenced = new LinkedHashMap<>();
+                    Object2ObjectLinkedOpenHashMap<String, JsonValue> referenced = new Object2ObjectLinkedOpenHashMap<>();
                     referenced.put(Keywords.ID, JsonProvider.instance().createValue(id));
 
                     // 6.9.2.
                     JsonValue reverseMap = elementObject.get(Keywords.REVERSE);
 
                     // 6.9.3.
-                    for (Entry<String, JsonValue> entry : reverseMap.asJsonObject().entrySet()) {
+                    for (Map.Entry<String, JsonValue> entry : reverseMap.asJsonObject().entrySet()) {
 
                         // 6.9.3.1.
                         for (JsonValue value : entry.getValue().asJsonArray()) {
@@ -418,13 +417,13 @@ public final class NodeMapBuilder {
         return nodeMap;
     }
 
-    private static Set<JsonValue> optimizedAddToSet(JsonValue jsonValue, Set<JsonValue> nodeType) {
+    private static ObjectSet<JsonValue> optimizedAddToSet(JsonValue jsonValue, ObjectSet<JsonValue> nodeType) {
         if (nodeType.isEmpty()) {
-            nodeType = Set.of(jsonValue);
+            nodeType = ObjectSet.of(jsonValue);
         } else if (nodeType.size() == 1 && !nodeType.contains(jsonValue)) {
-            nodeType = Set.of(((JsonValue) nodeType.toArray()[0]), jsonValue);
+            nodeType = ObjectSet.of(((JsonValue) nodeType.toArray()[0]), jsonValue);
         } else if (nodeType.size() == 2) {
-            nodeType = new LinkedHashSet<>(nodeType);
+            nodeType = new ObjectLinkedOpenHashSet<>(nodeType);
             nodeType.add(jsonValue);
         } else if (nodeType.size() > 2) {
             nodeType.add(jsonValue);

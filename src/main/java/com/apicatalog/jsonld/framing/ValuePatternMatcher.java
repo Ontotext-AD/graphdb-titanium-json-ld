@@ -15,11 +15,10 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.util.Arrays;
-
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -109,7 +108,7 @@ public final class ValuePatternMatcher {
             frame = value.asJsonArray().getJsonObject(0);
         }
 
-        return frame != null && (frame.isEmpty() || Arrays.asList(
+        return frame != null && (frame.isEmpty() || ObjectArrayList.of(
                 Keywords.DEFAULT,
                 Keywords.OMIT_DEFAULT,
                 Keywords.EMBED,

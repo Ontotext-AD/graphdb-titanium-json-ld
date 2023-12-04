@@ -16,8 +16,6 @@
 package com.apicatalog.jsonld.flattening;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,19 +23,20 @@ import java.util.Optional;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
 public final class NodeMap {
-
-    private final Map<String, Map<String, Map<String, JsonValue>>> index;
+    private final Map<String, JsonValue> EMPTY_MOST_INNER_MAP = new Object2ObjectLinkedOpenHashMap<>();
+    private final Object2ObjectLinkedOpenHashMap<String, Map<String, JsonValue>> EMPTY_INNER_MAP = new Object2ObjectLinkedOpenHashMap<>(0);
+    private final Object2ObjectLinkedOpenHashMap<String, Object2ObjectLinkedOpenHashMap<String, Map<String, JsonValue>>> index;
 
     private final BlankNodeIdGenerator generator = new BlankNodeIdGenerator();
 
     public NodeMap() {
-        this.index = new LinkedHashMap<>();
-        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.index = new Object2ObjectLinkedOpenHashMap<>();
+        this.index.put(Keywords.DEFAULT, new Object2ObjectLinkedOpenHashMap<>());
     }
 
     public void set(String graphName, String subject, String property, JsonValue value) {
@@ -47,8 +46,8 @@ public final class NodeMap {
         }
 
         index
-            .computeIfAbsent(graphName, x -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, x -> new LinkedHashMap<>())
+            .computeIfAbsent(graphName, x -> new Object2ObjectLinkedOpenHashMap<>())
+            .computeIfAbsent(subject, x -> new Object2ObjectLinkedOpenHashMap<>())
             .put(property, value);
     }
 
@@ -80,7 +79,7 @@ public final class NodeMap {
                     && index.get(graphName).get(subject).containsKey(property);
     }
 
-    public Optional<Map<String, Map<String, JsonValue>>> get(String graphName) {
+    public Optional<Object2ObjectLinkedOpenHashMap<String, Map<String, JsonValue>>> get(String graphName) {
         return Optional.ofNullable(index.get(graphName));
     }
 
@@ -97,11 +96,11 @@ public final class NodeMap {
     }
 
     public Collection<String> subjects(String graphName) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).keySet();
+        return index.getOrDefault(graphName, EMPTY_INNER_MAP).keySet();
     }
 
     public Collection<String> properties(String graphName, String subject) {
-        return index.getOrDefault(graphName, Collections.emptyMap()).getOrDefault(subject, Collections.emptyMap()).keySet();
+        return index.getOrDefault(graphName, EMPTY_INNER_MAP).getOrDefault(subject, EMPTY_MOST_INNER_MAP).keySet();
     }
 
     /**
@@ -114,7 +113,7 @@ public final class NodeMap {
         final NodeMap result = new NodeMap();
 
         // 2.
-        for (final Map.Entry<String, Map<String, Map<String, JsonValue>>> graphEntry : index.entrySet()) {
+        for (final Map.Entry<String, Object2ObjectLinkedOpenHashMap<String, Map<String, JsonValue>>> graphEntry : index.entrySet()) {
 
             for (final Map.Entry<String, Map<String, JsonValue>> subject : graphEntry.getValue().entrySet()) {
 

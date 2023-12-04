@@ -15,10 +15,8 @@
  */
 package com.apicatalog.jsonld.flattening;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.apicatalog.jsonld.StringUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 /**
  *
@@ -26,12 +24,12 @@ import com.apicatalog.jsonld.StringUtils;
  */
 public final class BlankNodeIdGenerator {
 
-    private final Map<String, String> map;
+    private final Object2ObjectOpenHashMap<String, String> map;
 
     private int counter;
 
     public BlankNodeIdGenerator() {
-        this.map = new HashMap<>();
+        this.map = new Object2ObjectOpenHashMap<>();
         this.counter = 0;
     }
 

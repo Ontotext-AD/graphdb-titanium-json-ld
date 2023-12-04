@@ -15,11 +15,11 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 public final class Utils {
 
@@ -39,29 +39,29 @@ public final class Utils {
                 String[] array = keys.toArray(String[]::new);
 
                 if (array[0].equals(Keywords.ID) && array[1].equals(Keywords.TYPE)) {
-                    return List.of(Keywords.ID, Keywords.TYPE);
+                    return ObjectList.of(Keywords.ID, Keywords.TYPE);
                 } else if (array[1].equals(Keywords.VALUE)) {
                     if (array[0].equals(Keywords.LANGUAGE)) {
-                        return List.of(Keywords.LANGUAGE, Keywords.VALUE);
+                        return ObjectList.of(Keywords.LANGUAGE, Keywords.VALUE);
                     } else if (array[0].equals(Keywords.TYPE)) {
-                        return List.of(Keywords.TYPE, Keywords.VALUE);
+                        return ObjectList.of(Keywords.TYPE, Keywords.VALUE);
                     }
                 }
 
                 if (array[0].compareTo(array[1]) <= 0) {
-                    return Arrays.asList(array);
+                    return ObjectList.of(array);
                 } else {
-                    return Arrays.asList(array[1], array[0]);
+                    return ObjectList.of(array[1], array[0]);
                 }
             } else {
                 if(keys.size() == 3){
                     String[] array = keys.toArray(String[]::new);
                     if (array[0].compareTo(array[1]) <= 0 && array[1].compareTo(array[2]) <= 0) {
-                        return Arrays.asList(array);
+                        return ObjectList.of(array);
                     }
                 }
 
-                ArrayList<String> sorted = new ArrayList<>(keys);
+                ObjectList<String> sorted = new ObjectArrayList<>(keys);
                 sorted.sort(String::compareTo);
                 return sorted;
             }

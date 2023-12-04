@@ -16,11 +16,8 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +33,9 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.LanguageTag;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -51,7 +51,7 @@ import jakarta.json.JsonValue;
 public final class TermDefinitionBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TermDefinitionBuilder.class.getName());
-    public static final Set<String> KEYWORDS = Set.of(Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
+    public static final ObjectOpenHashSet<String> KEYWORDS = ObjectOpenHashSet.of(Keywords.ID, Keywords.REVERSE, Keywords.CONTAINER,
             Keywords.CONTEXT, Keywords.DIRECTION, Keywords.INDEX, Keywords.LANGUAGE, Keywords.NEST, Keywords.PREFIX,
             Keywords.PROTECTED, Keywords.TYPE);
 
@@ -60,7 +60,7 @@ public final class TermDefinitionBuilder {
 
     private final JsonObject localContext;
 
-    private final Map<String, Boolean> defined;
+    private final Object2ObjectOpenHashMap<String, Boolean> defined;
 
     // optional
     private URI baseUrl;
@@ -71,7 +71,7 @@ public final class TermDefinitionBuilder {
 
     private Collection<String> remoteContexts;
 
-    private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
+    private TermDefinitionBuilder(ActiveContext activeContext, JsonObject localContext, Object2ObjectOpenHashMap<String, Boolean> defined) {
         this.activeContext = activeContext;
         this.localContext = localContext;
         this.defined = defined;
@@ -80,10 +80,10 @@ public final class TermDefinitionBuilder {
         this.baseUrl = null;
         this.protectedFlag = false;
         this.overrideProtectedFlag = false;
-        this.remoteContexts = new ArrayList<>();
+        this.remoteContexts = new ObjectArrayList<>();
     }
 
-    public static TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Map<String, Boolean> defined) {
+    public static TermDefinitionBuilder with(ActiveContext activeContext, JsonObject localContext, Object2ObjectOpenHashMap<String, Boolean> defined) {
         return new TermDefinitionBuilder(activeContext, localContext, defined);
     }
 
@@ -185,14 +185,14 @@ public final class TermDefinitionBuilder {
         // 7.
         if (JsonUtils.isNull(value)) {
 
-            valueObject = Collections.emptyMap();
+            valueObject = new Object2ObjectOpenHashMap<>();
             idValue = JsonValue.NULL;
             simpleTerm = false;
 
             // 8.
         } else if (JsonUtils.isString(value)) {
 
-            valueObject = Collections.emptyMap();
+            valueObject = new Object2ObjectOpenHashMap<>();
             idValue = value;
             simpleTerm = true;
 
@@ -533,7 +533,7 @@ public final class TermDefinitionBuilder {
                 activeContext
                         .newContext()
                         .overrideProtected(true)
-                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .remoteContexts(new ObjectArrayList<>(remoteContexts))
                         .validateScopedContext(false)
                         .create(context, baseUrl);
 

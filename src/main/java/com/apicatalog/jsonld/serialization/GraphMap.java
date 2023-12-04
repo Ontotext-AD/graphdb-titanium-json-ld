@@ -15,31 +15,32 @@
  */
 package com.apicatalog.jsonld.serialization;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.serialization.RdfToJsonld.Reference;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import jakarta.json.JsonValue;
 
 final class GraphMap {
 
     //                 graph,     subject,  predicate,  object
-    private final Map<String, Map<String, Map<String, JsonValue>>> index;
+    private final Object2ObjectMap<String, Object2ObjectMap<String, Map<String, JsonValue>>> index;
 
-    private final Map<String, Map<String, List<Reference>>> usages;
+    private final Object2ObjectMap<String, Object2ObjectMap<String, ObjectList<Reference>>> usages;
 
     public GraphMap() {
-        this.index = new LinkedHashMap<>();
-        this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.index = new Object2ObjectLinkedOpenHashMap<>();
+        this.index.put(Keywords.DEFAULT, new Object2ObjectLinkedOpenHashMap<>());
 
-        this.usages = new LinkedHashMap<>();
+        this.usages = new Object2ObjectLinkedOpenHashMap<>();
     }
 
     public boolean contains(final String graphName, final String subject) {
@@ -48,8 +49,8 @@ final class GraphMap {
 
     public void set(final String graphName, final String subject, final String property, final JsonValue value) {
         index
-            .computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new LinkedHashMap<>())
+            .computeIfAbsent(graphName, e -> new Object2ObjectLinkedOpenHashMap<>())
+            .computeIfAbsent(subject, e -> new Object2ObjectLinkedOpenHashMap<>())
             .put(property, value);
     }
 
@@ -81,7 +82,7 @@ final class GraphMap {
         return Optional.ofNullable(subjectMap.get(property));
     }
 
-    public Set<String> keys(String graphName) {
+    public ObjectSet<String> keys(String graphName) {
         return index.get(graphName).keySet();
     }
 
@@ -89,19 +90,19 @@ final class GraphMap {
         return index.containsKey(graphName);
     }
 
-    public Set<String> keys() {
+    public ObjectSet<String> keys() {
         return index.keySet();
     }
 
-    public List<Reference> getUsages(String graphName, String subject) {
+    public ObjectList<Reference> getUsages(String graphName, String subject) {
         return usages.containsKey(graphName) && usages.get(graphName).containsKey(subject)
                     ? usages.get(graphName).get(subject)
-                    : Collections.emptyList();
+                    : new ObjectArrayList<>();
     }
 
     public void addUsage(String graphName, String subject, Reference reference) {
-        usages.computeIfAbsent(graphName, e -> new LinkedHashMap<>())
-            .computeIfAbsent(subject, e -> new ArrayList<>())
+        usages.computeIfAbsent(graphName, e -> new Object2ObjectLinkedOpenHashMap<>())
+            .computeIfAbsent(subject, e -> new ObjectArrayList<>())
             .add(reference)
             ;
     }

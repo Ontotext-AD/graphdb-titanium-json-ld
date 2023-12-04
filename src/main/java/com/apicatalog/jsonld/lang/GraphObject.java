@@ -15,13 +15,10 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -39,7 +36,7 @@ public final class GraphObject {
         if (!JsonUtils.isObject(value) || !value.asJsonObject().containsKey(Keywords.GRAPH)) {
             return false;
         }
-        Set<String> allowed = new HashSet<>(Arrays.asList(Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.CONTEXT));
+        ObjectSet<String> allowed = ObjectSet.of(Keywords.GRAPH, Keywords.ID, Keywords.INDEX, Keywords.CONTEXT);
 
         return allowed.containsAll(value.asJsonObject().keySet());
     }
@@ -52,5 +49,4 @@ public final class GraphObject {
     public static final JsonObject toGraphObject(JsonValue value) {
         return JsonProvider.instance().createObjectBuilder().add(Keywords.GRAPH, JsonUtils.toJsonArray(value)).build();
     }
-
 }

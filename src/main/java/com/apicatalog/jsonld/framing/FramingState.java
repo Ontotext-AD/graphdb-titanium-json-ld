@@ -22,6 +22,10 @@ import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdEmbed;
 import com.apicatalog.jsonld.flattening.NodeMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public final class FramingState {
 
@@ -35,12 +39,12 @@ public final class FramingState {
 
     private NodeMap graphMap;
 
-    private Map<String, Map<String, Boolean>> done;
+    private Object2ObjectMap<String, Object2BooleanMap<String>> done;
 
     private Deque<String> parents;
 
     public FramingState() {
-        this.done = new HashMap<>();
+        this.done = new Object2ObjectOpenHashMap<>();
         this.parents = new ArrayDeque<>();
     }
 
@@ -117,7 +121,7 @@ public final class FramingState {
     }
 
     public void markDone(String subject) {
-        done.computeIfAbsent(graphName, x -> new HashMap<>()).put(subject, Boolean.TRUE);
+        done.computeIfAbsent(graphName, x -> new Object2BooleanOpenHashMap<>()).put(subject, Boolean.TRUE);
     }
 
     public boolean isParent(String subject) {

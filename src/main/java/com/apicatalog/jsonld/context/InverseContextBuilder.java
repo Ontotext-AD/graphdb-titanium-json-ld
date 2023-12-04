@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +22,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -83,7 +83,7 @@ public final class InverseContextBuilder {
                                         .getTerm(termName)
                                         .map(TermDefinition::getContainerMapping)
                                         .filter(collection -> !collection.isEmpty())
-                                        .orElseGet(() -> Arrays.asList(Keywords.NONE))
+                                        .orElseGet(() -> ObjectArrayList.of(Keywords.NONE))
                                         .stream()
                                         .sorted()
                                         .collect(Collectors.joining());

@@ -15,27 +15,26 @@
  */
 package com.apicatalog.rdf.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 final class RdfGraphImpl implements RdfGraph {
 
-    private final Map<RdfResource, Map<RdfResource, Set<RdfValue>>> index;
+    private final Object2ObjectMap<RdfResource, Object2ObjectMap<RdfResource, ObjectSet<RdfValue>>> index;
 
-    private final List<RdfTriple> triples;
+    private final ObjectList<RdfTriple> triples;
 
     protected RdfGraphImpl() {
-        this.index = new HashMap<>(1);
-        this.triples = new ArrayList<>();
+        this.index = new Object2ObjectOpenHashMap<>(1);
+        this.triples = new ObjectArrayList<>();
     }
 
     public void add(final RdfTriple triple) {
@@ -45,8 +44,8 @@ final class RdfGraphImpl implements RdfGraph {
         }
 
         index
-                .computeIfAbsent(triple.getSubject(), x -> new HashMap<>(1))
-                .computeIfAbsent(triple.getPredicate(), x -> new HashSet<>(1))
+                .computeIfAbsent(triple.getSubject(), x -> new Object2ObjectOpenHashMap<>(1))
+                .computeIfAbsent(triple.getPredicate(), x -> new ObjectOpenHashSet<>(1))
                 .add(triple.getObject());
 
         triples.add(triple);
@@ -65,7 +64,7 @@ final class RdfGraphImpl implements RdfGraph {
     }
 
     @Override
-    public List<RdfTriple> toList() {
+    public ObjectList<RdfTriple> toList() {
         return triples;
     }
 }

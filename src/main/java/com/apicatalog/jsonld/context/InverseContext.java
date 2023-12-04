@@ -15,23 +15,22 @@
  */
 package com.apicatalog.jsonld.context;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 public final class InverseContext {
 
-    private final Map<String, Map<String, Map<String, Map<String, String>>>> context;
+    private final Object2ObjectLinkedOpenHashMap<String, Object2ObjectLinkedOpenHashMap<String, Object2ObjectLinkedOpenHashMap<String, Object2ObjectLinkedOpenHashMap<String, String>>>> context;
 
     public InverseContext() {
-        this.context = new LinkedHashMap<>();
+        this.context = new Object2ObjectLinkedOpenHashMap<>();
     }
 
     private void set(final String variable, final String container, final String type, final String key, final String value) {
-        context.computeIfAbsent(variable, x -> new LinkedHashMap<>())
-                .computeIfAbsent(container, x -> new LinkedHashMap<>())
-                .computeIfAbsent(type, x -> new LinkedHashMap<>())
+        context.computeIfAbsent(variable, x -> new Object2ObjectLinkedOpenHashMap<>())
+                .computeIfAbsent(container, x -> new Object2ObjectLinkedOpenHashMap<>())
+                .computeIfAbsent(type, x -> new Object2ObjectLinkedOpenHashMap<>())
                 .put(key, value);
     }
 
@@ -102,7 +101,7 @@ public final class InverseContext {
         return map3.get(key);
     }
 
-    public Map<String, String> getNullable(final String variable, final String container, final String type) {
+    public Object2ObjectLinkedOpenHashMap<String, String> getNullable(final String variable, final String container, final String type) {
         var map1 = context.get(variable);
         if(map1 == null){
             return null;

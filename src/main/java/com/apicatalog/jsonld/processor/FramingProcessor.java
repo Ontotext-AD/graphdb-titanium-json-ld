@@ -16,10 +16,6 @@
 package com.apicatalog.jsonld.processor;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +39,10 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -171,7 +171,7 @@ public final class FramingProcessor {
 
         // 16.
         Framing.with(state,
-                        new ArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
+                        new ObjectArrayList<>(state.getGraphMap().subjects(state.getGraphName())),
                         Frame.of(expandedFrame),
                         resultMap,
                         null
@@ -184,7 +184,7 @@ public final class FramingProcessor {
         // 17. - remove blank @id
         if (!activeContext.inMode(JsonLdVersion.V1_0)) {
 
-            final List<String> remove = findBlankNodes(resultMap.valuesToArray());
+            final ObjectList<String> remove = findBlankNodes(resultMap.valuesToArray());
 
             if (!remove.isEmpty()) {
                 result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
@@ -330,7 +330,7 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static JsonValue removeBlankIdKey(JsonValue value, List<String> blankNodes) {
+    private static JsonValue removeBlankIdKey(JsonValue value, ObjectList<String> blankNodes) {
 
         if (JsonUtils.isScalar(value)) {
             return value;
@@ -362,29 +362,32 @@ public final class FramingProcessor {
         return object.build();
     }
 
-    private static List<String> findBlankNodes(final JsonArray array) {
+    private static ObjectList<String> findBlankNodes(final JsonArray array) {
 
         if(array.isEmpty()) {
-            return List.of();
+            return ObjectList.of();
         }
 
-        Map<String, Integer> candidates = new HashMap<>();
+        Object2IntMap<String> candidates = new Object2IntOpenHashMap<>();
 
         array.forEach(v -> findBlankNodes(v, candidates));
 
         if(candidates.isEmpty()) {
-            return List.of();
+            return ObjectList.of();
         }
 
-        return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
+        return candidates.object2IntEntrySet().stream()
+                .filter(e -> e.getIntValue() == 1)
+                .map(Entry::getKey)
+                .collect(ObjectArrayList::new, ObjectArrayList::add, ObjectArrayList::addAll);
     }
 
-    private static void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {
+    private static void findBlankNodes(JsonValue value, final Object2IntMap<String> blankNodes) {
 
         if (JsonUtils.isString(value)) {
 
             if (BlankNode.isWellFormed(((JsonString)value).getString())) {
-                Integer count = blankNodes.computeIfAbsent(((JsonString)value).getString(), x -> 0);
+                var count = blankNodes.computeIfAbsent(((JsonString)value).getString(), x -> 0);
                 blankNodes.put(((JsonString)value).getString(), ++count);
             }
 

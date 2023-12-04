@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.flattening;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -24,6 +23,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonStructure;
@@ -62,7 +62,7 @@ public final class Flattening {
         NodeMapBuilder.with(element, nodeMap).build();
 
         // 3.
-        final Map<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
+        final Object2ObjectLinkedOpenHashMap<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
 
         // 4.
         for (String graphName : Utils.index(nodeMap.graphs(), ordered)) {
@@ -79,7 +79,7 @@ public final class Flattening {
             }
 
             // 4.2.
-            final Map<String, JsonValue> entry = new LinkedHashMap<>(defaultGraph.get(graphName));
+            final Object2ObjectLinkedOpenHashMap<String, JsonValue> entry = new Object2ObjectLinkedOpenHashMap<>(defaultGraph.get(graphName));
 
             // 4.3.
             final JsonArrayBuilder graphArray =  JsonProvider.instance().createArrayBuilder();

@@ -1,22 +1,20 @@
 package com.apicatalog.jsonld.context.cache;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.function.BiConsumer;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 public final class LruCache<K, V> implements Cache<K, V> {
 
-    private final Map<K, V> cache;
+    private final int maxCapacity;
+    private final Object2ObjectLinkedOpenHashMap<K, V> cache;
+    private final ObjectLinkedOpenHashSet<K> accessOrderSet;
 
     public LruCache(final int maxCapacity) {
-        this.cache = new LinkedHashMap<K, V>((int)(maxCapacity / 0.75 + 1), 0.75f, true) {
-
-            private static final long serialVersionUID = 4822962879473741809L;
-
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                return this.size() > maxCapacity;
-            }
-        };
+        this.maxCapacity = maxCapacity;
+        this.cache = new Object2ObjectLinkedOpenHashMap<>((int)(maxCapacity / 0.75 + 1));
+        this.accessOrderSet = new ObjectLinkedOpenHashSet<>((int)(maxCapacity / 0.75 + 1));
     }
 
     @Override
@@ -26,12 +24,30 @@ public final class LruCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(final K key) {
-        return cache.get(key);
+        V value = cache.get(key);
+        if (value != null) {
+            // Move the key to the end of the access order
+            accessOrderSet.remove(key);
+            accessOrderSet.add(key);
+        }
+        return value;
     }
 
     @Override
     public void put(final K key, V value) {
+        if (this.size() > maxCapacity) {
+            K eldestKey = cache.keySet().iterator().next();
+            cache.remove(eldestKey);
+            accessOrderSet.remove(eldestKey);
+        }
         cache.put(key, value);
+        // Add the key to the end of the access order
+        accessOrderSet.add(key);
+    }
+
+    public void forEach(BiConsumer<? super K, ? super V> action) {
+        // Iterate over the keys in access order
+        accessOrderSet.forEach(key -> action.accept(key, cache.get(key)));
     }
 
     public long size() {

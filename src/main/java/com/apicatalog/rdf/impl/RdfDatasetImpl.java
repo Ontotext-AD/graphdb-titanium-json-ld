@@ -15,30 +15,30 @@
  */
 package com.apicatalog.rdf.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfGraph;
 import com.apicatalog.rdf.RdfNQuad;
 import com.apicatalog.rdf.RdfResource;
 import com.apicatalog.rdf.RdfTriple;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 final class RdfDatasetImpl implements RdfDataset {
 
-    private final Map<RdfResource, RdfGraphImpl> graphs;
+    private final Object2ObjectMap<RdfResource, RdfGraphImpl> graphs;
 
-    private final List<RdfNQuad> nquads;
+    private final ObjectList<RdfNQuad> nquads;
 
     private final RdfGraphImpl defaultGraph;
 
     protected RdfDatasetImpl() {
-        this.graphs = new HashMap<>(1);
-        this.nquads = new ArrayList<>();
+        this.graphs = new Object2ObjectOpenHashMap<>(1);
+        this.nquads = new ObjectArrayList<>();
         this.defaultGraph = new RdfGraphImpl();
     }
 
@@ -48,7 +48,7 @@ final class RdfDatasetImpl implements RdfDataset {
     }
 
     @Override
-    public List<RdfNQuad> toList() {
+    public ObjectList<RdfNQuad> toList() {
         return nquads;
     }
 
@@ -89,7 +89,7 @@ final class RdfDatasetImpl implements RdfDataset {
     }
 
     @Override
-    public Set<RdfResource> getGraphNames() {
+    public ObjectSet<RdfResource> getGraphNames() {
         return graphs.keySet();
     }
 

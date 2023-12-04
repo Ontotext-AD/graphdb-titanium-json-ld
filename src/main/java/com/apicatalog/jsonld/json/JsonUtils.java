@@ -18,14 +18,13 @@ package com.apicatalog.jsonld.json;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.StringUtils;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -245,28 +244,28 @@ public final class JsonUtils {
         }
     }
 
-    public static List<String> optimizedGetStrings(JsonValue value) {
+    public static ObjectArrayList<String> optimizedGetStrings(JsonValue value) {
         if (JsonValue.ValueType.ARRAY == value.getValueType()) {
             JsonArray jsonArray = value.asJsonArray();
             if (jsonArray.isEmpty()) {
-                return List.of();
+                return ObjectArrayList.of();
             } else if (jsonArray.size() == 1) {
                 if (JsonUtils.isString(jsonArray.get(0))) {
-                    return List.of(jsonArray.getString(0));
+                    return ObjectArrayList.of(jsonArray.getString(0));
                 } else {
-                    return List.of();
+                    return ObjectArrayList.of();
                 }
             } else if (jsonArray.size() == 2 && JsonUtils.isString(jsonArray.get(0)) && JsonUtils.isString(jsonArray.get(1))) {
                 String string0 = jsonArray.getString(0);
                 String string1 = jsonArray.getString(1);
                 if (string0.compareTo(string1) <= 0) {
-                    return List.of(string0, string1);
+                    return ObjectArrayList.of(string0, string1);
                 } else {
-                    return List.of(string1, string0);
+                    return ObjectArrayList.of(string1, string0);
                 }
             }
         } else if (JsonUtils.isString(value)) {
-            return List.of(((JsonString) value).getString());
+            return ObjectArrayList.of(((JsonString) value).getString());
         }
         return JsonUtils
                 .toStream(value)
@@ -274,6 +273,6 @@ public final class JsonUtils {
                 .map(JsonString.class::cast)
                 .map(JsonString::getString)
                 .sorted()
-                .collect(Collectors.toList());
+                .collect(ObjectArrayList::new, ObjectArrayList::add, ObjectArrayList::addAll);
     }
 }

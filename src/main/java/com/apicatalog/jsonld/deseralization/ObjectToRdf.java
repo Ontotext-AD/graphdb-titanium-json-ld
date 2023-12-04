@@ -18,9 +18,7 @@ package com.apicatalog.jsonld.deseralization;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +43,7 @@ import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 import com.apicatalog.rdf.lang.XsdConstants;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -68,14 +67,14 @@ final class ObjectToRdf {
 
     // required
     private JsonObject item;
-    private List<RdfTriple> triples;
+    private ObjectArrayList<RdfTriple> triples;
     private NodeMap nodeMap;
 
     // optional
     private RdfDirection rdfDirection;
     private boolean uriValidation;
 
-    private ObjectToRdf(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
+    private ObjectToRdf(JsonObject item, ObjectArrayList<RdfTriple> triples, NodeMap nodeMap) {
         this.item = item;
         this.triples = triples;
         this.nodeMap = nodeMap;
@@ -85,7 +84,7 @@ final class ObjectToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static ObjectToRdf with(JsonObject item, List<RdfTriple> triples, NodeMap nodeMap) {
+    public static ObjectToRdf with(JsonObject item, ObjectArrayList<RdfTriple> triples, NodeMap nodeMap) {
         return new ObjectToRdf(item, triples, nodeMap);
     }
 

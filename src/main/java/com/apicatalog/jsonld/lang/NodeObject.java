@@ -15,12 +15,12 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
 import java.util.Map.Entry;
 
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
@@ -43,7 +43,7 @@ public final class NodeObject {
                                 && !value.asJsonObject().containsKey(Keywords.LIST)
                                 && !value.asJsonObject().containsKey(Keywords.SET))
 
-                        || Arrays.asList(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet())
+                        || ObjectSet.of(Keywords.CONTEXT, Keywords.GRAPH).containsAll(value.asJsonObject().keySet())
                         );
     }
 

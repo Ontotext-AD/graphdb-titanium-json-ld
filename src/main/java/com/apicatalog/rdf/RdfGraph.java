@@ -18,6 +18,7 @@ package com.apicatalog.rdf;
 import java.util.List;
 
 import com.apicatalog.jsonld.JsonLd;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 
 /**
@@ -36,6 +37,6 @@ public interface RdfGraph {
 
     boolean contains(RdfTriple triple);
 
-    List<RdfTriple> toList();
+    ObjectList<RdfTriple> toList();
 
 }

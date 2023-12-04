@@ -17,12 +17,11 @@ package com.apicatalog.jsonld.context;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import com.apicatalog.jsonld.lang.DirectionType;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jakarta.json.JsonValue;
 
 public final class TermDefinition {
@@ -41,7 +40,7 @@ public final class TermDefinition {
 
     private JsonValue localContext;
 
-    private Set<String> containerMapping;
+    private ObjectOpenHashSet<String> containerMapping;
 
     private String indexMapping;
 
@@ -57,7 +56,7 @@ public final class TermDefinition {
         this.prefixFlag = prefixFlag;
         this.protectedFlag = protectedFlag;
         this.reversePropertyFlag = reversePropertyFlag;
-        this.containerMapping = new HashSet<>();
+        this.containerMapping = new ObjectOpenHashSet<>();
     }
 
     public void setLocalContext(JsonValue context) {
@@ -140,7 +139,7 @@ public final class TermDefinition {
         this.indexMapping = indexMapping;
     }
 
-    protected void setContainerMapping(Set<String> containerMapping) {
+    protected void setContainerMapping(ObjectOpenHashSet<String> containerMapping) {
         this.containerMapping = containerMapping;
     }
 
@@ -169,15 +168,15 @@ public final class TermDefinition {
     }
 
     public boolean isNotSameExcept(TermDefinition ref) {
-        return !Objects.equals(uriMapping, ref.uriMapping) || prefixFlag != ref.prefixFlag
-                || !Objects.equals(reversePropertyFlag, ref.reversePropertyFlag)
+        return !Objects.equals(uriMapping, ref.uriMapping)
+                || prefixFlag != ref.prefixFlag
+                || reversePropertyFlag != ref.reversePropertyFlag
                 || !Objects.equals(baseUrl, ref.baseUrl) || !Objects.equals(containerMapping, ref.containerMapping)
                 || !Objects.equals(directionMapping, ref.directionMapping)
                 || !Objects.equals(indexMapping, ref.indexMapping) || !Objects.equals(nestValue, ref.nestValue)
                 || !Objects.equals(typeMapping, ref.typeMapping)
                 || !Objects.equals(languageMapping, ref.languageMapping)
-                || !Objects.equals(localContext, ref.localContext)
-                ;
+                || !Objects.equals(localContext, ref.localContext);
     }
 
     public boolean hasContainerMapping(String value) {

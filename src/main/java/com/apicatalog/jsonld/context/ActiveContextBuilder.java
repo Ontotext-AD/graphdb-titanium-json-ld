@@ -16,10 +16,8 @@
 package com.apicatalog.jsonld.context;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +37,8 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
@@ -76,7 +76,7 @@ public final class ActiveContextBuilder {
         this.activeContext = activeContext;
 
         // default optional values
-        this.remoteContexts = new ArrayList<>();
+        this.remoteContexts = new ObjectArrayList<>();
         this.overrideProtected = false;
         this.propagate = true;
         this.validateScopedContext = true;
@@ -237,7 +237,7 @@ public final class ActiveContextBuilder {
 
                 final DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
                 loaderOptions.setProfile(ProfileConstants.CONTEXT);
-                loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+                loaderOptions.setRequestProfile(Collections.singletonList(loaderOptions.getProfile()));
 
                 JsonStructure importedStructure = null;
 
@@ -441,7 +441,7 @@ public final class ActiveContextBuilder {
 
             final TermDefinitionBuilder termBuilder =
                             result
-                                .newTerm(contextDefinition, new HashMap<>())
+                                .newTerm(contextDefinition, new Object2ObjectOpenHashMap<>())
                                 .baseUrl(baseUrl)
                                 .overrideProtectedFlag(overrideProtected);
 
@@ -453,7 +453,7 @@ public final class ActiveContextBuilder {
 
                     termBuilder
                         .protectedFlag(JsonUtils.isTrue(contextDefinition.get(Keywords.PROTECTED)))
-                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .remoteContexts(new ObjectArrayList<>(remoteContexts))
                         .create(key);
                 }
             }
@@ -504,7 +504,7 @@ public final class ActiveContextBuilder {
             JsonValue cachedContext = activeContext.getOptions().getContextCache().get(contextKey);
             result = result
                     .newContext()
-                    .remoteContexts(new ArrayList<>(remoteContexts))
+                    .remoteContexts(new ObjectArrayList<>(remoteContexts))
                     .validateScopedContext(validateScopedContext)
                     .create(cachedContext, contextUri);
             return;
@@ -528,7 +528,7 @@ public final class ActiveContextBuilder {
 
             DocumentLoaderOptions loaderOptions = new DocumentLoaderOptions();
             loaderOptions.setProfile(ProfileConstants.CONTEXT);
-            loaderOptions.setRequestProfile(Arrays.asList(loaderOptions.getProfile()));
+            loaderOptions.setRequestProfile(Collections.singletonList(loaderOptions.getProfile()));
 
             try {
 
@@ -576,7 +576,7 @@ public final class ActiveContextBuilder {
         try {
             result = result
                         .newContext()
-                        .remoteContexts(new ArrayList<>(remoteContexts))
+                        .remoteContexts(new ObjectArrayList<>(remoteContexts))
                         .validateScopedContext(validateScopedContext)
                         .create(importedContext, remoteImport.getDocumentUrl());
 

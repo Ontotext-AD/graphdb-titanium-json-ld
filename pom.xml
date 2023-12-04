@@ -23,6 +23,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <jakarta.json.version>2.0.1</jakarta.json.version>
+    <fastutil.version>8.5.12</fastutil.version>
 
     <argLine>-Dfile.encoding=UTF-8</argLine>
 
@@ -44,6 +45,11 @@
       <artifactId>jakarta.json-api</artifactId>
       <version>${jakarta.json.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil</artifactId>
+      <version>${fastutil.version}</version>
     </dependency>
     <!-- Tests -->
     <dependency>

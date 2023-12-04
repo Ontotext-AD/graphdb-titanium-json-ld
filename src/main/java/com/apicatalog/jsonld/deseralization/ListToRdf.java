@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -29,6 +27,7 @@ import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
@@ -41,14 +40,14 @@ final class ListToRdf {
 
     // required
     private JsonArray list;
-    private List<RdfTriple> triples;
+    private ObjectArrayList<RdfTriple> triples;
     private NodeMap nodeMap;
 
     // optional
     private RdfDirection rdfDirection;
     private boolean uriValidation;
 
-    private ListToRdf(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
+    private ListToRdf(final JsonArray list, final ObjectArrayList<RdfTriple> triples, NodeMap nodeMap) {
         this.list = list;
         this.triples = triples;
         this.nodeMap = nodeMap;
@@ -58,7 +57,7 @@ final class ListToRdf {
         this.uriValidation = JsonLdOptions.DEFAULT_URI_VALIDATION;
     }
 
-    public static ListToRdf with(final JsonArray list, final List<RdfTriple> triples, NodeMap nodeMap) {
+    public static ListToRdf with(final JsonArray list, final ObjectArrayList<RdfTriple> triples, NodeMap nodeMap) {
         return new ListToRdf(list, triples, nodeMap);
     }
 
@@ -87,7 +86,7 @@ final class ListToRdf {
             index++;
 
             // 3.1.
-            final List<RdfTriple> embeddedTriples = new ArrayList<>();
+            final ObjectArrayList<RdfTriple> embeddedTriples = new ObjectArrayList<>();
 
             // 3.2.
             RdfValue rdfValue = ObjectToRdf

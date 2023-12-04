@@ -15,9 +15,10 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public final class LanguageTag {
 
@@ -29,7 +30,7 @@ public final class LanguageTag {
     private Collection<Extension> extensions;
     private Collection<String> variants;
     private Collection<String> privateUse;
-    
+
     LanguageTag() {
     }
 
@@ -137,7 +138,7 @@ public final class LanguageTag {
 
     protected void addLanguageExtension(String languageExtension) {
         if (this.languageExtensions == null) {
-            this.languageExtensions = new ArrayList<>();
+            this.languageExtensions = new ObjectArrayList<>();
         }
         this.languageExtensions.add(languageExtension);
     }
@@ -152,21 +153,21 @@ public final class LanguageTag {
 
     protected void addVariant(String variant) {
         if (this.variants == null) {
-            this.variants = new ArrayList<>();
+            this.variants = new ObjectArrayList<>();
         }
         this.variants.add(variant);
     }
 
     protected void addExtension(Extension extension) {
         if (this.extensions == null) {
-            this.extensions = new ArrayList<>();
+            this.extensions = new ObjectArrayList<>();
         }
         this.extensions.add(extension);
     }
 
     protected void addPrivateUse(String privateTag) {
         if (this.privateUse == null) {
-            this.privateUse = new ArrayList<>();
+            this.privateUse = new ObjectArrayList<>();
         }
         this.privateUse.add(privateTag);
     }

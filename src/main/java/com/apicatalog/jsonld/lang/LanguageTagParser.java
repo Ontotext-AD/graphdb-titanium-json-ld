@@ -15,11 +15,11 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.lang.LanguageTag.Extension;
 import com.apicatalog.rdf.lang.RdfAlphabet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Language tags are used to help identify languages and are defined by <code>RFC 5646</code>.
@@ -167,7 +167,7 @@ final class LanguageTagParser {
         // singleton = DIGIT | a-z !- x
         while (acceptDigit() || (alphaRange() && !tags[tagIndex].equalsIgnoreCase("x") && accept())) {
 
-            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0), new ArrayList<>());
+            final Extension extension = new Extension(tags[tagIndex - 1].charAt(0), new ObjectArrayList<>());
 
             // 1*("-" (2*8alphanum))
             if (!acceptAlphaNun(2, extension::addTag)) {

@@ -15,10 +15,8 @@
  */
 package com.apicatalog.jsonld.compaction;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -36,6 +34,7 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -201,7 +200,7 @@ public final class Compaction {
         // 11.
         if (elementObject.containsKey(Keywords.TYPE)) {
 
-            final List<String> compactedTypes = new ArrayList<>();
+            final ObjectArrayList<String> compactedTypes = new ObjectArrayList<>();
 
             for (final JsonValue type : JsonUtils.toCollection(elementObject.get(Keywords.TYPE))) {
                 compactedTypes.add(activeContext.uriCompaction().vocab(true).compact(((JsonString)type).getString()));
@@ -473,7 +472,7 @@ public final class Compaction {
                 final Collection<String> container = activeContext
                         .getTerm(itemActiveProperty)
                         .map(TermDefinition::getContainerMapping)
-                        .orElseGet(() -> Collections.emptyList());
+                        .orElseGet(Collections::emptyList);
 
                 // 12.8.5.
                 final boolean asArray = container.contains(Keywords.SET)

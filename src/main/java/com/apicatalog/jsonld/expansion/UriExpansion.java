@@ -15,7 +15,6 @@
  */
 package com.apicatalog.jsonld.expansion;
 
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +28,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -53,7 +53,7 @@ public final class UriExpansion {
     private boolean uriValidation;
 
     private JsonObject localContext;
-    private Map<String, Boolean> defined;
+    private Object2ObjectOpenHashMap<String, Boolean> defined;
 
     private UriExpansion(final ActiveContext activeContext) {
         this.activeContext = activeContext;
@@ -85,7 +85,7 @@ public final class UriExpansion {
         return this;
     }
 
-    public UriExpansion defined(Map<String, Boolean> value) {
+    public UriExpansion defined(Object2ObjectOpenHashMap<String, Boolean> value) {
         this.defined = value;
         return this;
     }

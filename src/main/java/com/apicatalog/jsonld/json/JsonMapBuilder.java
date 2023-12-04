@@ -15,13 +15,14 @@
  */
 package com.apicatalog.jsonld.json;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -30,10 +31,10 @@ import jakarta.json.JsonValue;
 
 public final class JsonMapBuilder {
 
-    public static final Set<String> ValueObjectKeywords = Set.of(Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
-    private final Map<String, Object> map;
+    public static final ObjectSet<String> ValueObjectKeywords = ObjectSet.of(Keywords.TYPE, Keywords.VALUE, Keywords.DIRECTION, Keywords.LANGUAGE, Keywords.INDEX, Keywords.ANNOTATION);
+    private final Object2ObjectMap<String, Object> map;
 
-    private JsonMapBuilder(Map<String, Object> map) {
+    private JsonMapBuilder(Object2ObjectMap<String, Object> map) {
         this.map = map;
     }
 
@@ -77,15 +78,15 @@ public final class JsonMapBuilder {
     }
 
     public static JsonMapBuilder create(JsonObject object) {
-        return new JsonMapBuilder(new LinkedHashMap<>(object));
+        return new JsonMapBuilder(new Object2ObjectLinkedOpenHashMap<>(object));
     }
 
     public static JsonMapBuilder create(Map<String, JsonValue> object) {
-        return new JsonMapBuilder(new LinkedHashMap<>(object));
+        return new JsonMapBuilder(new Object2ObjectLinkedOpenHashMap<>(object));
     }
 
     public static JsonMapBuilder create() {
-        return new JsonMapBuilder(new LinkedHashMap<>());
+        return new JsonMapBuilder(new Object2ObjectLinkedOpenHashMap<>());
     }
 
     public Optional<JsonValue> get(String key) {

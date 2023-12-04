@@ -16,7 +16,8 @@
 package com.apicatalog.jsonld.context;
 
 import java.util.Collection;
-import java.util.Map;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
  *
@@ -59,7 +60,7 @@ public final class TermSelector {
 
         // 4.
         for (String container : containers) {
-            Map<String, String> map = inverseContext.getNullable(variable, container, typeLanguage);
+            Object2ObjectLinkedOpenHashMap<String, String> map = inverseContext.getNullable(variable, container, typeLanguage);
             if (map != null) {
                 for (String item : preferredValues) {
                     String result = map.get(item);

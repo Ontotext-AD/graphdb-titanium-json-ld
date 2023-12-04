@@ -16,10 +16,7 @@
 package com.apicatalog.jsonld.expansion;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -34,6 +31,8 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -115,7 +114,7 @@ public final class ObjectExpansion {
                 .inputType(inputType)
                 .result(result)
                 .typeContext(typeContext)
-                .nest(new LinkedHashMap<>())
+                .nest(new Object2ObjectLinkedOpenHashMap<>())
                 .frameExpansion(frameExpansion)
                 .ordered(ordered)
                 .expand();
@@ -208,7 +207,7 @@ public final class ObjectExpansion {
             // 11.2
 
             JsonValue value = element.get(Keywords.TYPE);
-            List<String> terms = JsonUtils.optimizedGetStrings(value);
+            ObjectArrayList<String> terms = JsonUtils.optimizedGetStrings(value);
 
             for (final String term : terms) {
 
@@ -253,7 +252,7 @@ public final class ObjectExpansion {
             // 11.2
 
             JsonValue value = element.get(key);
-            List<String> terms = JsonUtils.optimizedGetStrings(value);
+            ObjectArrayList<String> terms = JsonUtils.optimizedGetStrings(value);
 
             for (final String term : terms) {
 

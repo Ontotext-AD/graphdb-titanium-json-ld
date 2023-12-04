@@ -15,8 +15,6 @@
  */
 package com.apicatalog.jsonld.deseralization;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +34,7 @@ import com.apicatalog.rdf.RdfTriple;
 import com.apicatalog.rdf.RdfValue;
 import com.apicatalog.rdf.lang.RdfConstants;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -168,7 +167,7 @@ public final class JsonLdToRdf {
                             for (JsonValue item : nodeMap.get(graphName, subject, property).asJsonArray()) {
 
                                 // 1.3.2.5.1.
-                                final List<RdfTriple> listTriples = new ArrayList<>();
+                                final ObjectArrayList<RdfTriple> listTriples = new ObjectArrayList<>();
 
                                 // 1.3.2.5.2.
                                 RdfValue rdfValue = ObjectToRdf

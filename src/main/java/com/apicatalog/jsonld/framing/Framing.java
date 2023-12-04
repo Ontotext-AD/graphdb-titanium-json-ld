@@ -15,10 +15,7 @@
  */
 package com.apicatalog.jsonld.framing;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +30,8 @@ import com.apicatalog.jsonld.lang.NodeObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -48,7 +47,7 @@ public final class Framing {
 
     // required
     private final FramingState state;
-    private final List<String> subjects;
+    private final ObjectList<String> subjects;
     private final Frame frame;
     private final JsonMapBuilder parent;
 
@@ -57,7 +56,7 @@ public final class Framing {
     // optional
     private boolean ordered;
 
-    private Framing(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
+    private Framing(FramingState state, ObjectList<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         this.state = state;
         this.subjects = subjects;
         this.frame = frame;
@@ -68,7 +67,7 @@ public final class Framing {
         this.ordered = false;
     }
 
-    public static final Framing with(FramingState state, List<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
+    public static final Framing with(FramingState state, ObjectList<String> subjects, Frame frame, JsonMapBuilder parent, String activeProperty) {
         return new Framing(state, subjects, frame, parent, activeProperty);
     }
 
@@ -87,7 +86,7 @@ public final class Framing {
         final boolean requireAll = frame.getRequireAll(state.isRequireAll());
 
         // 3.
-        final List<String> matchedSubjects =
+        final ObjectList<String> matchedSubjects =
                                 FrameMatcher
                                     .with(state, frame, requireAll)
                                     .match(subjects);
@@ -174,7 +173,7 @@ public final class Framing {
 
                     Framing.with(
                                 graphState,
-                                new ArrayList<>(state.getGraphMap().get(id).map(Map::keySet).orElseGet(() -> Collections.emptySet())),
+                                new ObjectArrayList<>(state.getGraphMap().get(id).map(Map::keySet).orElseGet(Collections::emptySet)),
                                 subframe,
                                 output,
                                 Keywords.GRAPH
@@ -266,7 +265,7 @@ public final class Framing {
 
                                     Framing.with(
                                                 listState,
-                                                Arrays.asList(listItem.asJsonObject().getString(Keywords.ID)),
+                                                ObjectArrayList.of(listItem.asJsonObject().getString(Keywords.ID)),
                                                 listFrame,
                                                 listResult,
                                                 Keywords.LIST)
@@ -292,7 +291,7 @@ public final class Framing {
 
                         Framing.with(
                                     clonedState,
-                                    Arrays.asList(item.asJsonObject().getString(Keywords.ID)),
+                                    ObjectArrayList.of(item.asJsonObject().getString(Keywords.ID)),
                                     Frame.of((JsonStructure)subframe),
                                     output,
                                     property)
@@ -359,7 +358,7 @@ public final class Framing {
 
                         final Frame subframe = Frame.of((JsonStructure)reverseObject.asJsonObject().get(reverseProperty));
 
-                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElseGet(() -> Collections.emptySet())) {
+                        for (final String subjectProperty : state.getGraphMap().get(state.getGraphName()).map(Map::keySet).orElseGet(Collections::emptySet)) {
 
                             final JsonValue nodeValues = state.getGraphMap().get(state.getGraphName(), subjectProperty, reverseProperty);
 
@@ -379,7 +378,7 @@ public final class Framing {
 
                                 Framing.with(
                                             reverseState,
-                                            Arrays.asList(subjectProperty),
+                                            ObjectArrayList.of(subjectProperty),
                                             subframe,
                                             reverseResult,
                                             null)

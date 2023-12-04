@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+
 public interface RdfDataset {
 
     RdfGraph getDefaultGraph();
@@ -39,9 +42,9 @@ public interface RdfDataset {
      */
     RdfDataset add(RdfTriple triple);
 
-    List<RdfNQuad> toList();
+    ObjectList<RdfNQuad> toList();
 
-    Set<RdfResource> getGraphNames();
+    ObjectSet<RdfResource> getGraphNames();
 
     Optional<RdfGraph> getGraph(RdfResource graphName);
 

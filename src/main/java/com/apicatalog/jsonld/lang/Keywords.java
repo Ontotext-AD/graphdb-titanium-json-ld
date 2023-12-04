@@ -15,8 +15,9 @@
  */
 package com.apicatalog.jsonld.lang;
 
-import java.util.Arrays;
 import java.util.Set;
+
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 public final class Keywords {
 
@@ -94,7 +95,7 @@ public final class Keywords {
     // Extension: JSON-LD-STAR (Experimental)
     public static final String ANNOTATION = "@annotation";
 
-    private static final Set<String> ALL_KEYWORDS = Set.of(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
+    private static final ObjectSet<String> ALL_KEYWORDS = ObjectSet.of(ANY, BASE, CONTAINER, CONTEXT, DIRECTION, GRAPH,
             ID, IMPORT, INCLUDED, INDEX, JSON, LANGUAGE, LIST, NEST, NONE, PREFIX, PRESERVE, PROPAGATE, PROTECTED, REVERSE, SET,
             TYPE, VALUE, VERSION, VOCAB,
             // framing
@@ -161,10 +162,10 @@ public final class Keywords {
     }
 
     public static boolean anyMatch(final String key, final String... keywords) {
-        return Arrays.asList(keywords).contains(key);
+        return ObjectSet.of(keywords).contains(key);
     }
 
-    public static boolean notAllMatch(Set<String> values, Set<String> keywords) {
+    public static boolean notAllMatch(Set<String> values, ObjectSet<String> keywords) {
         return !keywords.containsAll(values);
     }
 }

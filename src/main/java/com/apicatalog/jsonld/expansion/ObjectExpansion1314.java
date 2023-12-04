@@ -18,8 +18,6 @@ package com.apicatalog.jsonld.expansion;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -44,6 +42,7 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
@@ -72,7 +71,7 @@ final class ObjectExpansion1314 {
     private ActiveContext typeContext;
     private JsonMapBuilder result;
     private String inputType;
-    private Map<String, JsonValue> nest;
+    private Object2ObjectLinkedOpenHashMap<String, JsonValue> nest;
 
     // optional
     private boolean frameExpansion;
@@ -105,7 +104,7 @@ final class ObjectExpansion1314 {
         return this;
     }
 
-    public ObjectExpansion1314 nest(Map<String, JsonValue> nest) {
+    public ObjectExpansion1314 nest(Object2ObjectLinkedOpenHashMap<String, JsonValue> nest) {
         this.nest = nest;
         return this;
     }
@@ -963,7 +962,7 @@ final class ObjectExpansion1314 {
             else if (Keywords.NEST.equals(expandedProperty)) {
 
                 if (nest == null) {
-                    nest = new LinkedHashMap<>();
+                    nest = new Object2ObjectLinkedOpenHashMap<>();
                     nest.put(key, JsonValue.EMPTY_JSON_ARRAY);
 
                 } else if (!nest.containsKey(key)) {
@@ -1080,7 +1079,7 @@ final class ObjectExpansion1314 {
                         .inputType(inputType)
                         .result(result)
                         .typeContext(typeContext)
-                        .nest(new LinkedHashMap<>())
+                        .nest(new Object2ObjectLinkedOpenHashMap<>())
                         .frameExpansion(frameExpansion)
                         .ordered(ordered)
                         .recurse();

@@ -15,13 +15,13 @@
  */
 package com.apicatalog.jsonld.json;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
 import com.apicatalog.jsonld.lang.Keywords;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -116,7 +116,7 @@ public final class JsonLdComparison {
             return true;
         }
 
-        final List<JsonValue> remaining = new ArrayList<>(array2);
+        final ObjectList<JsonValue> remaining = new ObjectArrayList<>(array2);
 
         for (final JsonValue item1 : array1) {
 
