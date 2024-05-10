@@ -33,11 +33,16 @@ public final class NodeMap {
 
     private final Map<String, Map<String, Map<String, JsonValue>>> index;
 
-    private final BlankNodeIdGenerator generator = new BlankNodeIdGenerator();
-
+    private final BlankNodeIdGenerator generator;
+    
     public NodeMap() {
+        this(new BlankNodeIdGenerator());
+    }
+
+    public NodeMap(BlankNodeIdGenerator generator) {
         this.index = new LinkedHashMap<>();
         this.index.put(Keywords.DEFAULT, new LinkedHashMap<>());
+        this.generator = generator;
     }
 
     public void set(String graphName, String subject, String property, JsonValue value) {

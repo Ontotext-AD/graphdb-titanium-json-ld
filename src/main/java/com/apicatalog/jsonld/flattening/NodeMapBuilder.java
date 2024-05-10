@@ -24,6 +24,7 @@ import java.util.Set;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.BlankNode;
@@ -92,6 +93,24 @@ public final class NodeMapBuilder {
     public NodeMapBuilder referencedNode(Map<String, JsonValue> referencedNode) {
         this.referencedNode = referencedNode;
         return this;
+    }
+    
+    /**
+     * Generates a NodeMap for the provided JSON-LD structure and options.
+     * This method is particularly useful for NDJSONLD format, as it keeps track of created blank node ids between sequential invocations.
+     * Additionally, it allows the context to be retained between different batch processing operations.
+     * @param element The JSON structure for which the NodeMap is generated.
+     * @param options The JsonLdOptions options to configure the NodeMap generation. Can be null.
+     * @return The generated NodeMap.
+     * @throws JsonLdError If an error occurs during the generation of the NodeMap.
+     */
+    public static NodeMap getNodeMap(JsonStructure element, JsonLdOptions options) throws JsonLdError {
+        NodeMap nodeMap = with(element, options != null && options.getGenerator() != null ? new NodeMap(options.getGenerator()) : new NodeMap()).build();
+        
+        if (options != null) {
+            options.setGenerator(options.getGenerator());
+        }
+        return nodeMap;
     }
 
     public NodeMap build() throws JsonLdError {

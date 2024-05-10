@@ -16,11 +16,13 @@
 package com.apicatalog.jsonld;
 
 import java.net.URI;
+import java.util.Set;
 
 import com.apicatalog.jsonld.context.cache.Cache;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.flattening.BlankNodeIdGenerator;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
@@ -121,6 +123,10 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
+    
+    private BlankNodeIdGenerator generator;
+    
+    private Set<String> usedBlankNodeIds;
 
     public JsonLdOptions() {
         this(SchemeRouter.defaultInstance());
@@ -157,6 +163,7 @@ public final class JsonLdOptions {
         this.contextCache = new LruCache<>(256);
         this.documentCache = null;
         this.uriValidation = DEFAULT_URI_VALIDATION;
+        this.generator = new BlankNodeIdGenerator();
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -188,6 +195,8 @@ public final class JsonLdOptions {
         this.contextCache = options.contextCache;
         this.documentCache = options.documentCache;
         this.uriValidation = options.uriValidation;
+        this.generator = options.generator;
+        this.usedBlankNodeIds = options.usedBlankNodeIds;
     }
 
     /**
@@ -485,5 +494,22 @@ public final class JsonLdOptions {
      */
     public void setUriValidation(boolean enabled) {
         this.uriValidation = enabled;
+    }
+    
+    public BlankNodeIdGenerator getGenerator() {
+        return generator;
+    }
+    
+    public void setGenerator(BlankNodeIdGenerator generator) {
+        this.generator = generator;
+    }
+    
+    public Set<String> getUsedBlankNodeIds() {
+        return usedBlankNodeIds;
+    }
+    
+    // This set is provided externally in GraphDB, when NDJSONLD export is selected
+    public void setUsedBlankNodeIds(Set<String> usedBlankNodeIds) {
+        this.usedBlankNodeIds = usedBlankNodeIds;
     }
 }

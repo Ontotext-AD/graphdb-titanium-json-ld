@@ -15,10 +15,13 @@
  */
 package com.apicatalog.jsonld.flattening;
 
+import static com.apicatalog.jsonld.flattening.NodeMapBuilder.getNodeMap;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.json.JsonProvider;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -53,13 +56,10 @@ public final class Flattening {
         return this;
     }
 
-    public JsonArray flatten() throws JsonLdError {
+    public JsonArray flatten(final JsonLdOptions options) throws JsonLdError {
 
         // 1.
-        final NodeMap nodeMap = new NodeMap();
-
-        // 2.
-        NodeMapBuilder.with(element, nodeMap).build();
+        final NodeMap nodeMap = getNodeMap(element, options);
 
         // 3.
         final Map<String, Map<String, JsonValue>> defaultGraph = nodeMap.get(Keywords.DEFAULT).orElseThrow(IllegalStateException::new);
