@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import static com.apicatalog.jsonld.flattening.NodeMapBuilder.getNodeMap;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +33,6 @@ import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.compaction.Compaction;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.framing.Frame;
 import com.apicatalog.jsonld.framing.Framing;
 import com.apicatalog.jsonld.framing.FramingState;
@@ -156,7 +156,7 @@ public final class FramingProcessor {
         state.setRequireAll(options.isRequiredAll());       // 14.4.
         state.setOmitDefault(options.isOmitDefault());      // 14.5.
 
-        state.setGraphMap(NodeMapBuilder.with(expandedInput, new NodeMap()).build());   // 14.7.
+        state.setGraphMap(getNodeMap(expandedInput, options));   // 14.7.
 
         if (frameDefault) {
             state.setGraphName(Keywords.DEFAULT); // 14.6.
@@ -184,7 +184,7 @@ public final class FramingProcessor {
         // 17. - remove blank @id
         if (!activeContext.inMode(JsonLdVersion.V1_0)) {
 
-            final List<String> remove = findBlankNodes(resultMap.valuesToArray());
+            final List<String> remove = findBlankNodes(resultMap.valuesToArray(), options);
 
             if (!remove.isEmpty()) {
                 result = result.map(v -> FramingProcessor.removeBlankIdKey(v, remove));
@@ -361,10 +361,10 @@ public final class FramingProcessor {
 
         return object.build();
     }
-
-    private static List<String> findBlankNodes(final JsonArray array) {
-
-        if(array.isEmpty()) {
+    
+    private static List<String> findBlankNodes(final JsonArray array, JsonLdOptions options) {
+        
+        if (array.isEmpty()) {
             return List.of();
         }
 
@@ -372,11 +372,44 @@ public final class FramingProcessor {
 
         array.forEach(v -> findBlankNodes(v, candidates));
 
-        if(candidates.isEmpty()) {
+        if (candidates.isEmpty()) {
             return List.of();
         }
-
-        return candidates.entrySet().stream().filter(e -> e.getValue() == 1).map(Entry::getKey).collect(Collectors.toList());
+        
+        try {
+            return candidates.entrySet()
+                    .stream()
+                    .filter(e -> e.getValue() == 1 && isBlankNodeReferenced(e.getKey(), options))
+                    .map(Entry::getKey)
+                    .collect(Collectors.toList());
+        } finally {
+            if (options != null && options.getUsedBlankNodeIds() != null) {
+                // Save blank node ids that are met in the document more than once,
+                // they appear to be referenced blank nodes and should be passed
+                // to the next document of NDJSONLD evaluation
+                options.getUsedBlankNodeIds()
+                        .addAll(candidates.entrySet()
+                                .stream()
+                                .filter(e -> e.getValue() > 1)
+                                .map(Entry::getKey)
+                                .collect(Collectors.toList()));
+            }
+        }
+    }
+    
+    /**
+     * Checks if a given blank node ID is referenced in the already processed documents.
+     * This is only valid in the context of NDJSONLD processing.
+     *
+     * @param blankNodeId The blank node ID to check.
+     * @param options     The JSON-LD options containing used blank node IDs.
+     * @return True if the blank node ID is not referenced, false otherwise.
+     */
+    private static boolean isBlankNodeReferenced(String blankNodeId, JsonLdOptions options) {
+        if (options != null && options.getUsedBlankNodeIds() != null) {
+            return !options.getUsedBlankNodeIds().contains(blankNodeId);
+        }
+        return true;
     }
 
     private static void findBlankNodes(JsonValue value, final Map<String, Integer> blankNodes) {

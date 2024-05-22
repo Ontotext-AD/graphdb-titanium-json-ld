@@ -15,6 +15,8 @@
  */
 package com.apicatalog.jsonld.processor;
 
+import static com.apicatalog.jsonld.flattening.NodeMapBuilder.getNodeMap;
+
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -22,8 +24,6 @@ import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.deseralization.JsonLdToRdf;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.flattening.NodeMap;
-import com.apicatalog.jsonld.flattening.NodeMapBuilder;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
@@ -70,7 +70,7 @@ public final class ToRdfProcessor {
 
         return JsonLdToRdf
                         .with(
-                            NodeMapBuilder.with(expandedInput, new NodeMap()).build(),
+                            getNodeMap(expandedInput, options),
                             Rdf.createDataset()
                             )
                         .produceGeneralizedRdf(options.isProduceGeneralizedRdf())
