@@ -133,11 +133,15 @@ public final class JsonLdOptions {
     }
 
     public JsonLdOptions(DocumentLoader loader) {
-        initializeDefaults(loader, false);
+        setupOptions(loader, false);
     }
 
     public JsonLdOptions(boolean preserveBnodeIds) {
-        initializeDefaults(SchemeRouter.defaultInstance(), preserveBnodeIds);
+        setupOptions(SchemeRouter.defaultInstance(), preserveBnodeIds);
+    }
+
+    public JsonLdOptions(DocumentLoader loader, boolean preserveBnodeIds) {
+        setupOptions(loader, preserveBnodeIds);
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -487,7 +491,7 @@ public final class JsonLdOptions {
         this.usedBlankNodeIds = usedBlankNodeIds;
     }
 
-    private void initializeDefaults(DocumentLoader loader, boolean preserveBnodeIds) {
+    private void setupOptions(DocumentLoader loader, boolean preserveBnodeIds) {
         // default values
         this.base = null;
         this.compactArrays = true;
