@@ -123,9 +123,9 @@ public final class JsonLdOptions {
     private Cache<String, Document> documentCache;
 
     private boolean uriValidation;
-    
+
     private BlankNodeIdGenerator generator;
-    
+
     private Set<String> usedBlankNodeIds;
 
     public JsonLdOptions() {
@@ -133,37 +133,15 @@ public final class JsonLdOptions {
     }
 
     public JsonLdOptions(DocumentLoader loader) {
+        setupOptions(loader, false);
+    }
 
-        // default values
-        this.base = null;
-        this.compactArrays = true;
-        this.compactToRelative = true;
-        this.documentLoader = loader;
-        this.expandContext = null;
-        this.extractAllScripts = false;
-        this.ordered = false;
-        this.processingMode = JsonLdVersion.V1_1;
-        this.produceGeneralizedRdf = true;
-        this.rdfDirection = null;
-        this.useNativeTypes = false;
-        this.useRdfType = false;
+    public JsonLdOptions(boolean preserveBnodeIds) {
+        setupOptions(SchemeRouter.defaultInstance(), preserveBnodeIds);
+    }
 
-        // framing defaults
-        this.embed = JsonLdEmbed.ONCE;
-        this.explicit = false;
-        this.omitDefault = false;
-        this.omitGraph = null;
-        this.requiredAll = false;
-
-        // Extension: JSON-LD-STAR (Experimental)
-        this.rdfStar = DEFAULT_RDF_STAR;
-
-        // custom
-        this.numericId = DEFAULT_NUMERIC_ID;
-        this.contextCache = new LruCache<>(256);
-        this.documentCache = null;
-        this.uriValidation = DEFAULT_URI_VALIDATION;
-        this.generator = new BlankNodeIdGenerator();
+    public JsonLdOptions(DocumentLoader loader, boolean preserveBnodeIds) {
+        setupOptions(loader, preserveBnodeIds);
     }
 
     public JsonLdOptions(JsonLdOptions options) {
@@ -495,21 +473,54 @@ public final class JsonLdOptions {
     public void setUriValidation(boolean enabled) {
         this.uriValidation = enabled;
     }
-    
+
     public BlankNodeIdGenerator getGenerator() {
         return generator;
     }
-    
+
     public void setGenerator(BlankNodeIdGenerator generator) {
         this.generator = generator;
     }
-    
+
     public Set<String> getUsedBlankNodeIds() {
         return usedBlankNodeIds;
     }
-    
+
     // This set is provided externally in GraphDB, when NDJSONLD export is selected
     public void setUsedBlankNodeIds(Set<String> usedBlankNodeIds) {
         this.usedBlankNodeIds = usedBlankNodeIds;
+    }
+
+    private void setupOptions(DocumentLoader loader, boolean preserveBnodeIds) {
+        // default values
+        this.base = null;
+        this.compactArrays = true;
+        this.compactToRelative = true;
+        this.documentLoader = loader;
+        this.expandContext = null;
+        this.extractAllScripts = false;
+        this.ordered = false;
+        this.processingMode = JsonLdVersion.V1_1;
+        this.produceGeneralizedRdf = true;
+        this.rdfDirection = null;
+        this.useNativeTypes = false;
+        this.useRdfType = false;
+
+        // framing defaults
+        this.embed = JsonLdEmbed.ONCE;
+        this.explicit = false;
+        this.omitDefault = false;
+        this.omitGraph = null;
+        this.requiredAll = false;
+
+        // Extension: JSON-LD-STAR (Experimental)
+        this.rdfStar = DEFAULT_RDF_STAR;
+
+        // custom
+        this.numericId = DEFAULT_NUMERIC_ID;
+        this.contextCache = new LruCache<>(256);
+        this.documentCache = null;
+        this.uriValidation = DEFAULT_URI_VALIDATION;
+        this.generator = new BlankNodeIdGenerator(preserveBnodeIds);
     }
 }
