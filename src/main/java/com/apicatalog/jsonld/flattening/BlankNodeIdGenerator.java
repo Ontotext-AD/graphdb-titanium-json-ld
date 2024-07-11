@@ -30,9 +30,16 @@ public final class BlankNodeIdGenerator {
 
     private int counter;
 
+    private final boolean preserveBnodeIds;
+
     public BlankNodeIdGenerator() {
+        this(false);
+    }
+
+    public BlankNodeIdGenerator(boolean preserveBnodeIds) {
         this.map = new HashMap<>();
         this.counter = 0;
+        this.preserveBnodeIds = preserveBnodeIds;
     }
 
     public String createIdentifier() {
@@ -44,6 +51,6 @@ public final class BlankNodeIdGenerator {
             return createIdentifier();
         }
 
-        return map.computeIfAbsent(identifier, x -> createIdentifier());
+        return map.computeIfAbsent(identifier, x -> preserveBnodeIds ? identifier : createIdentifier());
     }
 }
